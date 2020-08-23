@@ -12,7 +12,7 @@ class WelcomeCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def announce_join(self, member):
+    async def announce_join(self, member):
         chan = self.bot.get_channel(config.WELCOME_CHANNEL)
         if not chan is None:
             await chan.send('Welcome aboard the Ark, %s! Thanks for supporting the show.' % (member.mention,))
@@ -23,9 +23,9 @@ class WelcomeCog(commands.Cog):
         in_after = member_had_role(after)
 
         if not in_before and in_after:
-            self.announce_join(after)
+            await self.announce_join(after)
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
         if member_had_role(member):
-            self.announce_join(member)
+            await self.announce_join(member)
