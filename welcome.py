@@ -15,7 +15,7 @@ class WelcomeCog(commands.Cog):
     async def announce_join(self, member):
         chan = self.bot.get_channel(config.WELCOME_CHANNEL)
         if not chan is None:
-            await chan.send('Welcome aboard the Ark, %s! Thanks for supporting the show.' % (member.mention,))
+            await chan.send(config.WELCOME_MESSAGE % (member.mention,))
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
