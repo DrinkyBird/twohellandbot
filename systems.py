@@ -2,54 +2,62 @@ import socketio
 import discord
 from discord.ext import commands
 import time
+import asyncio
 
 THAB_API_URL = 'https://tohellandback.herokuapp.com'
 DOORS_IMAGE_URL = 'https://tohellandbot.s3-eu-west-1.amazonaws.com/static/doors.png'
 
-sio = socketio.Client()
+sio = socketio.AsyncClient()
 healths = ['','','']
 is_connected = False
 
 @sio.event
-def connect():
+async def connect():
     global is_connected
 
     is_connected = True
     print("Connected to " + THAB_API_URL)
 
 @sio.event
-def connect_error():
+async def connect_error(err):
     global is_connected
 
     is_connected = False
     print("Failed connection to " + THAB_API_URL)
 
+    await asyncio.sleep(15)
+    sio.connect(THAB_API_URL)
+
 @sio.event
-def disconnect():
+async def disconnect():
     global is_connected
 
     is_connected = False
     print("Disconnected from " + THAB_API_URL)
 
+    await asyncio.sleep(15)
+    sio.connect(THAB_API_URL)
+
 @sio.on('system1health')
-def on_system1health(data):
+async def on_system1health(data):
     healths[0] = data
 
 @sio.on('system2health')
-def on_system1health(data):
+async def on_system1health(data):
     healths[1] = data
 
 @sio.on('system3health')
-def on_system1health(data):
+async def on_system1health(data):
     healths[2] = data
 
 class SystemsCog(commands.Cog):
     def __init__(self):
         self.timeouts = {}
-        sio.connect(THAB_API_URL)
+
+        asyncio.get_event_loop().run_until_complete(sio.connect(THAB_API_URL))
 
     def cog_unload(self):
-        sio.disconnect()
+        asyncio.get_event_loop().run_until_complete(sio.disconnect())
 
     @commands.command(help="Shows the current system status", usage="")
     async def systems(self, ctx):
