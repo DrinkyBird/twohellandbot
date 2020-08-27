@@ -5,7 +5,7 @@ Python rewrite of TOHELLANDBOT
 ## Dependencies
 
 ```
-python3 -m pip install -U discord.py pydenticon
+python3 -m pip install -U discord.py pydenticon psutil
 ```
 
 ## Example config
