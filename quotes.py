@@ -4,12 +4,7 @@ from discord.ext import commands
 import db
 import datetime
 import time
-
-COL_ID = 0
-COL_TEXT = 1
-COL_TIMESTAMP = 2
-COL_SUBMITTER_ID = 3
-COL_SUBMITTER_USERNAME = 4
+import random
 
 BURNISH_FACE_IMG = "https://tohellandbot.s3-eu-west-1.amazonaws.com/static/RichardBurnishface.jpg"
 ADJECTIVES = [
@@ -27,20 +22,20 @@ class QuotesCog(commands.Cog):
 
         # specific quote id
         if id != -1:
-            cur.execute('SELECT * FROM quotes WHERE id=? LIMIT 1', (id,))
+            db.execute(cur, 'SELECT * FROM quotes WHERE id=? LIMIT 1', (id,))
         # random quote
         else:
-            cur.execute('SELECT * FROM quotes ORDER BY RANDOM() LIMIT 1')
+            db.execute(cur, 'SELECT * FROM quotes ORDER BY RANDOM() LIMIT 1')
 
         row = cur.fetchone()
 
         if row is None:
             await ctx.send('There is no quote with ID ' + str(id))
         else:
-            dt = datetime.datetime.utcfromtimestamp(row[COL_TIMESTAMP] / 1000)
-            embed = discord.Embed(title='Quote #' + str(row[COL_ID]), colour=0xFFFFFF, description=row[COL_TEXT], timestamp=dt)
+            dt = datetime.datetime.utcfromtimestamp(row["date"] / 1000)
+            embed = discord.Embed(title='Quote #' + str(row["id"]), colour=0xFFFFFF, description=row["text"], timestamp=dt)
             embed.set_author(name="Richard Burnish", icon_url=BURNISH_FACE_IMG)
-            embed.set_footer(text="Submitted by " + row[COL_SUBMITTER_USERNAME])
+            embed.set_footer(text="Submitted by " + row["submitter_name"])
             await ctx.send(embed=embed)
 
     @commands.command(help="Submit a quote to the database", usage="<text>")
@@ -53,20 +48,20 @@ class QuotesCog(commands.Cog):
         timestamp = int(round(time.time() * 1000))
 
         cur = db.get_cursor()
-        cur.execute('INSERT INTO quotes (text, date, submitter, submitter_name) VALUES (?, ?, ?, ?)', (text, timestamp, ctx.author.id, ctx.author.name))
+        db.execute(cur, 'INSERT INTO quotes (text, date, submitter, submitter_name) VALUES (?, ?, ?, ?)', (text, timestamp, ctx.author.id, ctx.author.name))
         db.commit()
 
         # now find its ID
-        cur.execute('SELECT id FROM quotes WHERE text=? AND date=? AND submitter=?', (text, timestamp, ctx.author.id))
+        db.execute(cur, 'SELECT id FROM quotes WHERE text=? AND date=? AND submitter=?', (text, timestamp, ctx.author.id))
         row = cur.fetchone()
 
-        await ctx.send("Thank you, <@%d>! :pray: Your quote has been added as number %d." % (ctx.author.id, row[COL_ID]))
+        await ctx.send("Thank you, <@%d>! :pray: Your %s quote has been added as number %d." % (ctx.author.id, random.choice(ADJECTIVES), row["id"]))
 
     @commands.command(help="Delete a quote from the database", usage="<id>")
     async def delquote(self, ctx, id):
         cur = db.get_cursor()
 
-        cur.execute('SELECT * FROM quotes WHERE id=?', (id,))
+        db.execute(cur, 'SELECT * FROM quotes WHERE id=?', (id,))
         row = cur.fetchone()
 
         if row is None:
@@ -74,10 +69,10 @@ class QuotesCog(commands.Cog):
             return
 
         # We can delete this
-        if ctx.author.id in config.ADMINS or str(ctx.author.id) == row[COL_SUBMITTER_ID]:
-            cur.execute('DELETE FROM quotes WHERE id=?', (id,))
+        if ctx.author.id in config.ADMINS or str(ctx.author.id) == row["submitter"]:
+            db.execute(cur, 'DELETE FROM quotes WHERE id=?', (id,))
             db.commit()
-            await ctx.send("Quote %d has been deleted." % (row[COL_ID],))
+            await ctx.send("Quote %d has been deleted." % (row["id"],))
         # We can't
         else:
             await ctx.send("You don't have permission to delete that quote!")
@@ -86,7 +81,7 @@ class QuotesCog(commands.Cog):
     async def editquote(self, ctx, id, *args):
         cur = db.get_cursor()
 
-        cur.execute('SELECT * FROM quotes WHERE id=?', (id,))
+        db.execute(cur, 'SELECT * FROM quotes WHERE id=?', (id,))
         row = cur.fetchone()
 
         if row is None:
@@ -94,11 +89,11 @@ class QuotesCog(commands.Cog):
             return
 
         # We can delete this
-        if ctx.author.id in config.ADMINS or str(ctx.author.id) == row[COL_SUBMITTER_ID]:
+        if ctx.author.id in config.ADMINS or str(ctx.author.id) == row["submitter"]:
             timestamp = int(round(time.time() * 1000))
             text = ' '.join(args)
 
-            cur.execute('UPDATE quotes SET text=?,date=?', (text, timestamp))
+            db.execute(cur, 'UPDATE quotes SET text=?,date=?', (text, timestamp))
             db.commit()
 
             await ctx.send('Quote updated.')
@@ -109,7 +104,7 @@ class QuotesCog(commands.Cog):
     async def quotestats(self, ctx):
 
         cur = db.get_cursor()
-        cur.execute('SELECT COUNT(id) FROM quotes')
+        db.execute(cur, 'SELECT COUNT(id) FROM quotes')
         row = cur.fetchone()
 
         if not row:

@@ -27,8 +27,13 @@ WELCOME_ROLES=[
     563405285050548235,
     563405372476358678
 ]
-WELCOME_CHANNEL = 563395608489099267    # ID of the channel to announce new members
+ANNOUNCE_CHANNEL = 688527547113537644
+ANNOUNCE_SERVER = 688192420013146140
 WELCOME_MESSAGE = "Welcome aboard the Ark, %s! Thanks for supporting the show. Check the <#713188449469071371> channel to get notified of updates."
+BOOST_MESSAGE = "Thank you %s for boosting our holy server! <:richardfedora:698367173185503302> More donations like that, and you might just make your way into heaven. Namaste. :pray:"
+BOOST_LEVEL1_MESSAGE = "Bless you %s for boosting our server to Level 1! :pray: :fireworks: :partying_face:"
+BOOST_LEVEL2_MESSAGE = "Bless you %s for boosting our server to Level 2! :pray: :fireworks: :partying_face:"
+BOOST_LEVEL3_MESSAGE = "Bless you %s for boosting our server to Level 3! :pray: :fireworks: :partying_face:"
 
 # Bot command prefix
 COMMAND_PREFIX = '!'
@@ -46,5 +51,11 @@ CREATE TABLE IF NOT EXISTS "quotes" (
         `date`  INTEGER,
         `submitter`     TEXT,
         `submitter_name`        TEXT
+);
+
+CREATE TABLE IF NOT EXISTS "stats" (
+        `commands_executed`     INTEGER,
+        `messages_received`     INTEGER,
+        `sql_queries_executed`  INTEGER
 );
 ```
