@@ -58,4 +58,6 @@ CREATE TABLE IF NOT EXISTS "stats" (
         `messages_received`     INTEGER,
         `sql_queries_executed`  INTEGER
 );
+
+INSERT INTO stats VALUES(0,0,0);
 ```
