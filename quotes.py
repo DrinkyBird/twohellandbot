@@ -93,7 +93,7 @@ class QuotesCog(commands.Cog):
             timestamp = int(round(time.time() * 1000))
             text = ' '.join(args)
 
-            db.execute(cur, 'UPDATE quotes SET text=?,date=?', (text, timestamp))
+            db.execute(cur, 'UPDATE quotes SET text=?,date=? WHERE id=?', (text, timestamp, id))
             db.commit()
 
             await ctx.send('Quote updated.')
