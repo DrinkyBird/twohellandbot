@@ -26,7 +26,7 @@ async def connect_error(err):
     print("Failed connection to " + THAB_API_URL)
 
     await asyncio.sleep(15)
-    sio.connect(THAB_API_URL)
+    await sio.connect(THAB_API_URL)
 
 @sio.event
 async def disconnect():
@@ -36,7 +36,7 @@ async def disconnect():
     print("Disconnected from " + THAB_API_URL)
 
     await asyncio.sleep(15)
-    sio.connect(THAB_API_URL)
+    await sio.connect(THAB_API_URL)
 
 @sio.on('system1health')
 async def on_system1health(data):
@@ -95,6 +95,6 @@ class SystemsCog(commands.Cog):
             return
 
         self.timeouts[ctx.author.id] = now
-        sio.emit('hack')
+        await sio.emit('hack')
 
         await ctx.send("Your hack has been sent.")
