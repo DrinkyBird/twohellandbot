@@ -36,7 +36,7 @@ class AdminCog(commands.Cog):
     async def sql(self, ctx, *args):
         if ctx.author.id in config.ADMINS:
             if len(args) < 1:
-                await ctx.send('<@%d> Syntax: `%ssay <channel ID> <text>`' % (ctx.author.id, config.COMMAND_PREFIX))
+                await ctx.send('<@%d> Syntax: `%ssql <SQLite query>`' % (ctx.author.id, config.COMMAND_PREFIX))
                 return
 
             text = ' '.join(args)
