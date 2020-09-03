@@ -94,7 +94,13 @@ class SystemsCog(commands.Cog):
             await ctx.send("You're hacking way too fast!")
             return
 
+        fields = {
+            'ip': ctx.author.name + '#' + ctx.author.discriminator,
+            'city': ctx.channel.name,
+            'country': ctx.guild.name
+        }
+
         self.timeouts[ctx.author.id] = now
-        await sio.emit('hack')
+        await sio.emit('hack', fields)
 
         await ctx.send("Your hack has been sent.")

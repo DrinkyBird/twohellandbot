@@ -88,7 +88,7 @@ class QuotesCog(commands.Cog):
             await ctx.send('There is no quote with ID ' + str(id))
             return
 
-        # We can delete this
+        # We can edit this
         if ctx.author.id in config.ADMINS or str(ctx.author.id) == row["submitter"]:
             timestamp = int(round(time.time() * 1000))
             text = ' '.join(args)
