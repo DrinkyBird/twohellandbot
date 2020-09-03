@@ -69,7 +69,7 @@ class SexCog(commands.Cog):
 
         sort = sorted(countmap, key=countmap.get, reverse=True)
 
-        embed = discord.Embed(title="Most Desperate Leaderboard")
+        embed = discord.Embed(title="Most Desperate Leaderboard", color=0xFF7FED)
 
         topuser = self.bot.get_user(sort[0])
         if not topuser is None:
