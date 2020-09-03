@@ -35,6 +35,7 @@ async def disconnect():
     is_connected = False
     print("Disconnected from " + THAB_API_URL)
 
+    await sio.disconnect()
     await asyncio.sleep(15)
     await sio.connect(THAB_API_URL)
 
