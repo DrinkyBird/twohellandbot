@@ -38,7 +38,7 @@ class SexCog(commands.Cog):
         # Burnish and I, respectively
         if ctx.author.id == 688191761977311259 or ctx.author.id == 195246948847058954:
             msg = "Yes daddy\\~\\~\\~\\~\\~"
-        if ctx.author.id in config.ADMINS:
+        elif ctx.author.id in config.ADMINS:
             msg = random.choice(MESSAGES_ADMIN)
         else:
             msg = random.choice(MESSAGES)
