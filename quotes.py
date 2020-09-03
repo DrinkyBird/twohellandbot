@@ -16,6 +16,9 @@ ADJECTIVES = [
 ]
 
 class QuotesCog(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
     @commands.command(help="Returns a quote from the database", usage="[id]")
     async def quote(self, ctx, id=-1):
         cur = db.get_cursor()
@@ -32,10 +35,15 @@ class QuotesCog(commands.Cog):
         if row is None:
             await ctx.send('There is no quote with ID ' + str(id))
         else:
+            user = self.bot.get_user(int(row["submitter"]))
+            username = row["submitter_name"]
+            if not user is None:
+                username = user.name
+
             dt = datetime.datetime.utcfromtimestamp(row["date"] / 1000)
             embed = discord.Embed(title='Quote #' + str(row["id"]), colour=0xFFFFFF, description=row["text"], timestamp=dt)
             embed.set_author(name="Richard Burnish", icon_url=BURNISH_FACE_IMG)
-            embed.set_footer(text="Submitted by " + row["submitter_name"])
+            embed.set_footer(text="Submitted by " + username)
             await ctx.send(embed=embed)
 
     @commands.command(help="Submit a quote to the database", usage="<text>")
