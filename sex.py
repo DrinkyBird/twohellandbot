@@ -20,6 +20,12 @@ MESSAGES_ADMIN = [
     "Ok..."
 ]
 
+MESSAGES_MULTIPLIER = [
+    "Wow! You're SUPER desperate!",
+    "GodDAMN you're desperate!",
+    "Ultra-Virgin!",
+]
+
 class SexCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -28,9 +34,16 @@ class SexCog(commands.Cog):
     async def sex(self, ctx):
         timestamp = int(round(time.time()))
 
+        amount = 1
+        if random.randrange(0, 100) == 0:
+            amount = 100
+        elif random.randrange(0, 20) == 0:
+            amount = 10
+
         cur = db.get_cursor()
-        db.execute(cur, 'INSERT INTO sex (user, time, channel, server) VALUES (?, ?, ?, ?)',
-                   (ctx.author.id, timestamp, ctx.channel.id, ctx.guild.id))
+        for i in range(amount):
+            db.execute(cur, 'INSERT INTO sex (user, time, channel, server) VALUES (?, ?, ?, ?)',
+                       (ctx.author.id, timestamp, ctx.channel.id, ctx.guild.id))
         db.commit()
 
         db.execute(cur, 'SELECT COUNT(*) FROM sex WHERE user=?', (ctx.author.id,))
@@ -38,13 +51,17 @@ class SexCog(commands.Cog):
 
         count = row[0]
 
-        # Burnish and I, respectively
-        if ctx.author.id == 688191761977311259 or ctx.author.id == 195246948847058954:
-            msg = "Yes daddy\\~\\~\\~\\~\\~"
-        elif ctx.author.id in config.ADMINS:
-            msg = random.choice(MESSAGES_ADMIN)
+        if amount > 1:
+            msg = random.choice(MESSAGES_MULTIPLIER)
+            msg += " **" + str(amount) + "\u00D7 BOOST**"
         else:
-            msg = random.choice(MESSAGES)
+            # Burnish and I, respectively
+            if ctx.author.id == 688191761977311259 or ctx.author.id == 195246948847058954:
+                msg = "Yes daddy\\~\\~\\~\\~\\~"
+            elif ctx.author.id in config.ADMINS:
+                msg = random.choice(MESSAGES_ADMIN)
+            else:
+                msg = random.choice(MESSAGES)
 
         msg = msg.replace("AUTHORMENTION", ctx.author.mention)
 
