@@ -21,6 +21,9 @@ MESSAGES_ADMIN = [
 ]
 
 class SexCog(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
     @commands.command(help="sex !!")
     async def sex(self, ctx):
         timestamp = int(round(time.time()))
@@ -46,3 +49,53 @@ class SexCog(commands.Cog):
         msg = msg.replace("AUTHORMENTION", ctx.author.mention)
 
         await ctx.send("%s (You've asked for sex %d times.)" % (msg, count))
+
+    @commands.command(help="Lists the most desperate people")
+    async def sexleaderboards(self, ctx):
+        MAX_USERS = 10
+
+        cur = db.get_cursor()
+        db.execute(cur, 'SELECT * FROM sex')
+        rows = cur.fetchall()
+
+        countmap = {}
+
+        for row in rows:
+            user = int(row["user"])
+            if user in countmap:
+                countmap[user] += 1
+            else:
+                countmap[user] = 1
+
+        sort = sorted(countmap, key=countmap.get, reverse=True)
+
+        embed = discord.Embed(title="Most Desperate Leaderboard")
+
+        topuser = self.bot.get_user(sort[0])
+        if not topuser is None:
+            embed.set_thumbnail(url=topuser.avatar_url)
+
+        i = 0
+        pos = 1
+        tmppos = 1
+        lastvalue = -9999
+        for user in sort:
+            value = countmap[user]
+
+            if value < lastvalue:
+                pos = i + 1
+
+            discorduser = self.bot.get_user(user)
+            username = "Unknown user ID `" + str(user) + "`"
+            if not discorduser is None:
+                username = discorduser.name + "#" + discorduser.discriminator
+
+            embed.add_field(name=str(pos) + ". " + username, value=str(value) + " requests for sex", inline=True)
+
+            i += 1
+            if i >= MAX_USERS:
+                break
+
+            lastvalue = value
+
+        await ctx.send(embed=embed)
