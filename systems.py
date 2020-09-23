@@ -53,8 +53,6 @@ async def on_system1health(data):
 
 class SystemsCog(commands.Cog):
     def __init__(self):
-        self.timeouts = {}
-
         asyncio.get_event_loop().run_until_complete(sio.connect(THAB_API_URL))
 
     def cog_unload(self):
@@ -89,19 +87,12 @@ class SystemsCog(commands.Cog):
             await ctx.send("Not connected to API server <" + THAB_API_URL + ">")
             return
 
-        now = time.time()
-
-        if ctx.author.id in self.timeouts and now - self.timeouts[ctx.author.id] < 10:
-            await ctx.send("You're hacking way too fast!")
-            return
-
         fields = {
             'ip': ctx.author.name + '#' + ctx.author.discriminator,
             'city': ctx.channel.name,
             'country': ctx.guild.name
         }
 
-        self.timeouts[ctx.author.id] = now
         await sio.emit('hack', fields)
 
         await ctx.send("Your hack has been sent.")
