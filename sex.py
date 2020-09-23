@@ -10,7 +10,10 @@ MESSAGES = [
     "Not with you lol fuck off",
     "Sorry, AUTHORMENTION. You don't have sufficient Sex Privileges.",
     "I don't think so.",
-    "Maybe take a shower first, AUTHORMENTION?"
+    "Maybe take a shower first, AUTHORMENTION?",
+    "Maybe ask blachool instead <a:blacube:727669022065295382>",
+    "Pfft, you wish.",
+    "Even the Veggie Mobile Truck gets fucked more than you, AUTHORMENTION <a:GloriousDay:713767794566627338>"
 ]
 
 MESSAGES_ADMIN = [
@@ -24,11 +27,14 @@ MESSAGES_MULTIPLIER = [
     "Wow! You're SUPER desperate!",
     "GodDAMN you're desperate!",
     "Ultra-Virgin!",
+    "You better pay extra for this!",
+    "I really do take pity on you..."
 ]
 
 MESSAGES_SHITTY_MULTIPLIER = [
     "You're pretty desperate, huh?",
-    "I mean, if you're *that* desperate..."
+    "I mean, if you're *that* desperate...",
+    "This is going to cost you, AUTHORMENTION."
 ]
 
 class SexCog(commands.Cog):
@@ -81,7 +87,7 @@ class SexCog(commands.Cog):
 
         msg = msg.replace("AUTHORMENTION", ctx.author.mention)
 
-        await ctx.send("%s (You've asked for sex %s times.)" % (msg, f'{count:,}'))
+        await ctx.send("%s (%s, you've asked for sex %s times.)" % (msg, ctx.author.name + "#" + ctx.author.id, f'{count:,}'))
 
     @commands.command(help="Lists the most desperate people")
     async def sexleaderboards(self, ctx):
