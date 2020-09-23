@@ -26,6 +26,11 @@ MESSAGES_MULTIPLIER = [
     "Ultra-Virgin!",
 ]
 
+MESSAGES_SHITTY_MULTIPLIER = [
+    "You're pretty desperate, huh?",
+    "I mean, if you're *that* desperate..."
+]
+
 class SexCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -35,10 +40,18 @@ class SexCog(commands.Cog):
         timestamp = int(round(time.time()))
 
         amount = 1
-        if random.randrange(0, 100) == 0:
+        if random.randrange(0, 1500) == 0:
+            amount = 1000
+        elif random.randrange(0, 300) == 0:
+            amount = 200
+        elif random.randrange(0, 100) == 0:
             amount = 100
         elif random.randrange(0, 20) == 0:
             amount = 10
+        elif random.randrange(0, 15) == 0:
+            amount = 5
+        elif random.randrange(0, 6) == 0:
+            amount = 2
 
         cur = db.get_cursor()
         for i in range(amount):
@@ -51,9 +64,12 @@ class SexCog(commands.Cog):
 
         count = row[0]
 
-        if amount > 1:
+        if amount >= 10:
             msg = random.choice(MESSAGES_MULTIPLIER)
             msg += " **" + str(amount) + "\u00D7 BOOST**"
+        elif amount > 1:
+            msg = random.choice(MESSAGES_SHITTY_MULTIPLIER)
+            msg += " **" + str(amount) + "\u00D7 boost.**"
         else:
             # Burnish and I, respectively
             if ctx.author.id == 688191761977311259 or ctx.author.id == 195246948847058954:
