@@ -65,7 +65,7 @@ class SexCog(commands.Cog):
 
         msg = msg.replace("AUTHORMENTION", ctx.author.mention)
 
-        await ctx.send("%s (You've asked for sex %d times.)" % (msg, count))
+        await ctx.send("%s (You've asked for sex %s times.)" % (msg, f'{count:,}'))
 
     @commands.command(help="Lists the most desperate people")
     async def sexleaderboards(self, ctx):
@@ -107,7 +107,7 @@ class SexCog(commands.Cog):
             if not discorduser is None:
                 username = discorduser.name + "#" + discorduser.discriminator
 
-            embed.add_field(name=str(pos) + ". " + username, value=str(value) + " requests for sex", inline=True)
+            embed.add_field(name=str(pos) + ". " + username, value=f'{value:,}' + " requests for sex", inline=True)
 
             i += 1
             if i >= MAX_USERS:
