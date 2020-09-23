@@ -6,6 +6,8 @@ import time
 import random
 import config
 
+EMBED_ICON = "https://tohellandbot.s3-eu-west-1.amazonaws.com/static/SecksPuppet.png"
+
 MESSAGES = [
     "Not with you lol fuck off",
     "Sorry, AUTHORMENTION. You don't have sufficient Sex Privileges.",
@@ -109,6 +111,7 @@ class SexCog(commands.Cog):
         sort = sorted(countmap, key=countmap.get, reverse=True)
 
         embed = discord.Embed(title="Most Desperate Leaderboard", color=0xFF7FED)
+        embed.set_author(name="Burnish & Co. !sex Services LLC", icon_url=EMBED_ICON)
         embed.set_footer(text=f'{len(rows):,} total requests for sex')
 
         topuser = self.bot.get_user(sort[0])
