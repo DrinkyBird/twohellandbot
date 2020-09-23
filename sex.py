@@ -109,6 +109,7 @@ class SexCog(commands.Cog):
         sort = sorted(countmap, key=countmap.get, reverse=True)
 
         embed = discord.Embed(title="Most Desperate Leaderboard", color=0xFF7FED)
+        embed.set_footer(text=f'{len(rows):,} total requests for sex')
 
         topuser = self.bot.get_user(sort[0])
         if not topuser is None:
@@ -116,7 +117,6 @@ class SexCog(commands.Cog):
 
         i = 0
         pos = 1
-        tmppos = 1
         lastvalue = -9999
         for user in sort:
             value = countmap[user]
