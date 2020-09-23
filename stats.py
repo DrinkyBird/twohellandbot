@@ -47,7 +47,12 @@ class StatsCog(commands.Cog):
         embed.set_thumbnail(url=self.bot.user.avatar_url)
 
         for col in result:
-            embed.add_field(name=str(col), value=str(result[col]), inline=True)
+            val = result[col]
+            valstr = str(result[col])
+            if isinstance(val, int):
+                valstr = f'{val:,}'
+
+            embed.add_field(name=str(col), value=valstr, inline=True)
 
         await ctx.send(embed=embed)
 
