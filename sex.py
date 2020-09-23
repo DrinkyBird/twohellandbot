@@ -87,7 +87,7 @@ class SexCog(commands.Cog):
 
         msg = msg.replace("AUTHORMENTION", ctx.author.mention)
 
-        await ctx.send("%s (%s, you've asked for sex %s times.)" % (msg, ctx.author.name + "#" + ctx.author.id, f'{count:,}'))
+        await ctx.send("%s (%s, you've asked for sex %s times.)" % (msg, ctx.author.name + "#" + str(ctx.author.id), f'{count:,}'))
 
     @commands.command(help="Lists the most desperate people")
     async def sexleaderboards(self, ctx):
