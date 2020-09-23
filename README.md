@@ -60,4 +60,13 @@ CREATE TABLE IF NOT EXISTS "stats" (
 );
 
 INSERT INTO stats VALUES(0,0,0);
+
+CREATE TABLE IF NOT EXISTS "sex" (
+"id"INTEGER,
+"user"TEXT,
+"time"INTEGER,
+"channel"TEXT,
+"server"TEXT, multiplier_id TEXT, multiplier_value INTEGER,
+PRIMARY KEY("id" AUTOINCREMENT)
+);
 ```

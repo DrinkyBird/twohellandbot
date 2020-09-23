@@ -5,6 +5,7 @@ import db
 import time
 import random
 import config
+import string
 
 EMBED_ICON = "https://tohellandbot.s3-eu-west-1.amazonaws.com/static/SecksPuppet.png"
 
@@ -39,6 +40,11 @@ MESSAGES_SHITTY_MULTIPLIER = [
     "This is going to cost you, AUTHORMENTION."
 ]
 
+def get_random_string(length):
+    letters = string.ascii_letters
+    result_str = ''.join(random.choice(letters) for i in range(length))
+    return result_str
+
 class SexCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -61,10 +67,12 @@ class SexCog(commands.Cog):
         elif random.randrange(0, 6) == 0:
             amount = 2
 
+        xid = get_random_string(16)
+
         cur = db.get_cursor()
         for i in range(amount):
-            db.execute(cur, 'INSERT INTO sex (user, time, channel, server) VALUES (?, ?, ?, ?)',
-                       (ctx.author.id, timestamp, ctx.channel.id, ctx.guild.id))
+            db.execute(cur, 'INSERT INTO sex (user, time, channel, server, multiplier_id, multiplier_value) VALUES (?, ?, ?, ?, ?, ?)',
+                       (ctx.author.id, timestamp, ctx.channel.id, ctx.guild.id, xid, amount))
         db.commit()
 
         db.execute(cur, 'SELECT COUNT(*) FROM sex WHERE user=?', (ctx.author.id,))
