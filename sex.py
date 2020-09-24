@@ -119,7 +119,7 @@ class SexCog(commands.Cog):
         sort = sorted(countmap, key=countmap.get, reverse=True)
 
         embed = discord.Embed(title="Most Desperate Leaderboard", color=0xFF7FED)
-        embed.set_author(name="Burnish & Co. !sex Services LLC", icon_url=EMBED_ICON)
+        embed.set_author(name="Burnish & Co. !sex Services LLC", icon_url=EMBED_ICON, url="http://bot.montclairpublicaccess.info/sex.php")
         embed.set_footer(text=f'{len(rows):,} total requests for sex')
 
         topuser = self.bot.get_user(sort[0])
