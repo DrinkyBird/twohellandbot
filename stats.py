@@ -83,8 +83,8 @@ class StatsCog(commands.Cog):
         increment_stat("messages_received")
 
     @commands.Cog.listener()
-    async def on_user_update(self, user):
-        update_user(user)
+    async def on_user_update(self, before, after):
+        update_user(after)
 
 def on_command(ctx):
     increment_stat("commands_executed")
