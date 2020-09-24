@@ -41,6 +41,7 @@ class StatsCog(commands.Cog):
         result = dict(row)
 
         result['memory_usage'] = "{:.3f} MB".format(process.memory_info().rss / 1024 / 1024)
+        result['database_size'] = "{:.3f} MB".format(os.path.getsize(config.DB_PATH) / 1024 / 1024)
         result['uptime'] = to_hhmmss(uptime)
 
         embed = discord.Embed(title='Bot Statistics', colour=0x3498DB)
