@@ -4,8 +4,9 @@ import config
 import sys
 import db
 from tabulate import tabulate
-import tempfile
 import os
+import psutil
+import gc
 
 class AdminCog(commands.Cog):
     def __init__(self, bot):
@@ -31,6 +32,19 @@ class AdminCog(commands.Cog):
         if ctx.author.id in config.ADMINS:
             await self.bot.close()
             sys.exit()
+
+    @commands.command(help="Invokes the garbage collector", usage="[generation=2]", hidden=True)
+    async def gc(self, ctx, generation=2):
+        if ctx.author.id in config.ADMINS:
+            process = psutil.Process(os.getpid())
+            before = process.memory_info().rss
+
+            gc.collect(generation)
+
+            process = psutil.Process(os.getpid())
+            after = process.memory_info().rss
+
+            await ctx.send("Before: {:.3f} MB; After: {:.3f} MB".format(before / 1024 / 1024, after / 1024 / 1024))
 
     @commands.command(help="Execute an SQLite query", usage="<query>", hidden=True)
     async def sql(self, ctx, *args):
