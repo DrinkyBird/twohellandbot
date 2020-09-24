@@ -22,4 +22,9 @@ client.add_cog(sex.SexCog(client))
 async def on_command(ctx):
     stats.increment_stat("commands_executed")
 
+@client.event
+async def on_ready():
+    for user in client.users:
+        stats.update_user(user)
+
 client.run(config.BOT_TOKEN)
