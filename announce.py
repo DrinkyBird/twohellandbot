@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 import config
+import stats
 
 def member_had_role(member):
     for role in member.roles:
@@ -19,6 +20,7 @@ class AnnouncementsCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
+        stats.update_user(after)
         in_before = member_had_role(before)
         in_after = member_had_role(after)
 
@@ -27,6 +29,7 @@ class AnnouncementsCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
+        stats.update_user(member)
         if member_had_role(member):
             await self.generic_announce(config.WELCOME_MESSAGE, member)
 

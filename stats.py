@@ -25,6 +25,23 @@ def to_hhmmss(num_seconds):
 
     return time
 
+def update_user(user):
+    cur = db.get_cursor()
+
+    db.execute(cur, 'SELECT id FROM users WHERE id=?', (user.id,))
+    row = cur.fetchone()
+
+    if row is None:
+        cur.execute('INSERT INTO users (id, username, discriminator, avatar_url) VALUES (?,?,?,?)',
+                    (user.id, user.name, user.discriminator, str(user.avatar_url)))
+    else:
+        cur.execute('UPDATE users SET id=?, username=?, discriminator=?, avatar_url=? WHERE id=?',
+                    (user.id, user.name, user.discriminator, str(user.avatar_url), user.id))
+
+    db.commit()
+
+    print("Update " + user.name)
+
 class StatsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
