@@ -49,6 +49,34 @@ class SexCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    def user_has_sex(self, id):
+        cur = db.get_cursor()
+        db.execute(cur, "SELECT total FROM sex_totals WHERE user = ?", (id,))
+        row = cur.fetchone()
+
+        if row is None or row["total"] < 1:
+            return False
+        return True
+
+
+    def get_user_rank(self, id, descending):
+        if not self.user_has_sex(id):
+            return -1
+
+        cur = db.get_cursor()
+
+        cmd = "SELECT COUNT(*) FROM sex_totals WHERE CAST(total AS INTEGER)"
+        cmd = cmd + (">" if descending else "<")
+        cmd = cmd + "(SELECT CAST(total AS INTEGER) FROM sex_totals WHERE user=?)"
+        db.execute(cur, cmd, (id,))
+        row = cur.fetchone()
+
+        if row is None:
+            return -1
+
+        return row[0] + 1
+
+
     @commands.command(help="sex !!")
     async def sex(self, ctx):
         timestamp = int(round(time.time()))
@@ -67,18 +95,22 @@ class SexCog(commands.Cog):
         elif random.randrange(0, 6) == 0:
             amount = 2
 
-        xid = get_random_string(16)
-
         cur = db.get_cursor()
-        for i in range(amount):
-            db.execute(cur, 'INSERT INTO sex (user, time, channel, server, multiplier_id, multiplier_value) VALUES (?, ?, ?, ?, ?, ?)',
-                       (ctx.author.id, timestamp, ctx.channel.id, ctx.guild.id, xid, amount))
         db.commit()
 
-        db.execute(cur, 'SELECT COUNT(*) FROM sex WHERE user=?', (ctx.author.id,))
+        if self.user_has_sex(ctx.author.id):
+            db.execute(cur, 'UPDATE sex_totals SET total=total+? WHERE user=?',
+                       (amount, ctx.author.id))
+        else:
+            db.execute(cur, 'INSERT INTO sex_totals (user, total) VALUES (?, ?)',
+                       (ctx.author.id, amount))
+        db.commit()
+
+
+        db.execute(cur, 'SELECT total FROM sex_totals WHERE user=?', (ctx.author.id,))
         row = cur.fetchone()
 
-        count = row[0]
+        count = row["total"]
 
         if amount >= 10:
             msg = random.choice(MESSAGES_MULTIPLIER)
@@ -104,17 +136,14 @@ class SexCog(commands.Cog):
         MAX_USERS = 10
 
         cur = db.get_cursor()
-        db.execute(cur, 'SELECT * FROM sex')
+        db.execute(cur, 'SELECT * FROM sex_totals')
         rows = cur.fetchall()
 
         countmap = {}
 
         for row in rows:
             user = int(row["user"])
-            if user in countmap:
-                countmap[user] += 1
-            else:
-                countmap[user] = 1
+            countmap[user] = row["total"]
 
         sort = sorted(countmap, key=countmap.get, reverse=True)
 
@@ -127,13 +156,9 @@ class SexCog(commands.Cog):
             embed.set_thumbnail(url=topuser.avatar_url)
 
         i = 0
-        pos = 1
-        lastvalue = -9999
         for user in sort:
             value = countmap[user]
-
-            if value < lastvalue:
-                pos = i + 1
+            pos = self.get_user_rank(user, True)
 
             discorduser = self.bot.get_user(user)
             username = "Unknown user ID `" + str(user) + "`"
@@ -145,7 +170,5 @@ class SexCog(commands.Cog):
             i += 1
             if i >= MAX_USERS:
                 break
-
-            lastvalue = value
 
         await ctx.send(embed=embed)

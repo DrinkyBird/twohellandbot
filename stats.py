@@ -40,8 +40,6 @@ def update_user(user):
 
     db.commit()
 
-    print("Update " + user.name)
-
 class StatsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot

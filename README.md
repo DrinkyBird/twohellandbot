@@ -69,4 +69,10 @@ CREATE TABLE IF NOT EXISTS "sex" (
 "server"TEXT, multiplier_id TEXT, multiplier_value INTEGER,
 PRIMARY KEY("id" AUTOINCREMENT)
 );
+
+CREATE TABLE "sex_totals" (
+	"user"	TEXT,
+	"total"	INTEGER,
+	PRIMARY KEY("user")
+)
 ```
