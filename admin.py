@@ -7,6 +7,7 @@ from tabulate import tabulate
 import os
 import psutil
 import gc
+from guppy import hpy
 
 class AdminCog(commands.Cog):
     def __init__(self, bot):
@@ -101,3 +102,11 @@ class AdminCog(commands.Cog):
                     await ctx.send(out, file=discord.File(filepath))
 
                 os.remove(filepath)
+
+    @commands.command(help="Show heap analysis", hidden=True)
+    async def heap(self, ctx):
+        if ctx.author.id in config.ADMINS:
+            h = hpy()
+            val = h.heap()
+
+            print(val)
