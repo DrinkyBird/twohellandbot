@@ -140,16 +140,18 @@ class SexCog(commands.Cog):
         rows = cur.fetchall()
 
         countmap = {}
+        totalsex = 0
 
         for row in rows:
             user = int(row["user"])
             countmap[user] = row["total"]
+            totalsex += row["total"]
 
         sort = sorted(countmap, key=countmap.get, reverse=True)
 
         embed = discord.Embed(title="Most Desperate Leaderboard", color=0xFF7FED)
         embed.set_author(name="Burnish & Co. !sex Services LLC", icon_url=EMBED_ICON, url="http://bot.montclairpublicaccess.info/sex.php")
-        embed.set_footer(text=f'{len(rows):,} total requests for sex')
+        embed.set_footer(text=f'{totalsex:,} total requests for sex')
 
         topuser = self.bot.get_user(sort[0])
         if not topuser is None:
