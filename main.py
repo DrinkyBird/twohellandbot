@@ -16,7 +16,7 @@ client.add_cog(identicon.IdenticonCog())
 client.add_cog(announce.AnnouncementsCog(client))
 client.add_cog(admin.AdminCog(client))
 client.add_cog(stats.StatsCog(client))
-client.add_cog(sex.SexCog(client))
+#client.add_cog(sex.SexCog(client))
 
 @client.event
 async def on_command(ctx):
