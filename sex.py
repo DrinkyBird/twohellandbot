@@ -174,3 +174,10 @@ class SexCog(commands.Cog):
                 break
 
         await ctx.send(embed=embed)
+
+    @commands.command(hidden=True)
+    async def sexwithsean(self, ctx):
+        if ctx.author.id == 195246948847058954:
+            await ctx.send("No selfcest allowed")
+        else:
+            await ctx.send("If you're really desperate for sex, pester <@264844361341075467> about the spam channel. Also, this attempt has been reported to the police.")
