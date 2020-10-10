@@ -55,15 +55,15 @@ class QuotesCog(commands.Cog):
             await ctx.send(embed=embed)
 
     @commands.command(help="Submit a quote to the database", usage="<text>")
-    async def addquote(self, ctx, *args):
+    async def addquote(self, ctx):
         await ctx.send("Please use the website to add quotes: <http://bot.montclairpublicaccess.info/quotes.php>")
 
     @commands.command(help="Delete a quote from the database", usage="<id>")
-    async def delquote(self, ctx, id):
+    async def delquote(self, ctx):
         await ctx.send("Please use the website to delete quotes: <http://bot.montclairpublicaccess.info/quotes.php>")
 
     @commands.command(help="Edit a quote in the database", usage="<id> <text>")
-    async def editquote(self, ctx, id, *args):
+    async def editquote(self, ctx):
         await ctx.send("Please use the website to edit quotes: <http://bot.montclairpublicaccess.info/quotes.php>")
 
     @commands.command(help="Shows statistics about the quote database")
