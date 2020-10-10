@@ -56,50 +56,15 @@ class QuotesCog(commands.Cog):
 
     @commands.command(help="Submit a quote to the database", usage="<text>")
     async def addquote(self, ctx, *args):
-        await ctx.send("Please use the website to add quotes: <http://bot.montclairpublicaccess.info/auth/quotes.add.php>")
+        await ctx.send("Please use the website to add quotes: <http://bot.montclairpublicaccess.info/quotes.php>")
 
     @commands.command(help="Delete a quote from the database", usage="<id>")
     async def delquote(self, ctx, id):
-        cur = db.get_cursor()
-
-        db.execute(cur, 'SELECT * FROM quotes WHERE id=?', (id,))
-        row = cur.fetchone()
-
-        if row is None:
-            await ctx.send('There is no quote with ID ' + str(id))
-            return
-
-        # We can delete this
-        if ctx.author.id in config.ADMINS or str(ctx.author.id) == row["submitter"]:
-            db.execute(cur, 'DELETE FROM quotes WHERE id=?', (id,))
-            db.commit()
-            await ctx.send("Quote %d has been deleted." % (row["id"],))
-        # We can't
-        else:
-            await ctx.send("You don't have permission to delete that quote!")
+        await ctx.send("Please use the website to delete quotes: <http://bot.montclairpublicaccess.info/quotes.php>")
 
     @commands.command(help="Edit a quote in the database", usage="<id> <text>")
     async def editquote(self, ctx, id, *args):
-        cur = db.get_cursor()
-
-        db.execute(cur, 'SELECT * FROM quotes WHERE id=?', (id,))
-        row = cur.fetchone()
-
-        if row is None:
-            await ctx.send('There is no quote with ID ' + str(id))
-            return
-
-        # We can edit this
-        if ctx.author.id in config.ADMINS or str(ctx.author.id) == row["submitter"]:
-            timestamp = int(round(time.time() * 1000))
-            text = ' '.join(args)
-
-            db.execute(cur, 'UPDATE quotes SET text=?,date=? WHERE id=?', (text, timestamp, id))
-            db.commit()
-
-            await ctx.send('Quote updated.')
-        else:
-            await ctx.send("You don't have permission to edit that quote!")
+        await ctx.send("Please use the website to edit quotes: <http://bot.montclairpublicaccess.info/quotes.php>")
 
     @commands.command(help="Shows statistics about the quote database")
     async def quotestats(self, ctx):
