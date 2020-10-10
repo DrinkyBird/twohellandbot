@@ -19,6 +19,13 @@ class QuotesCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    def get_speaker(self, id):
+        cur = db.get_cursor()
+
+        db.execute(cur, 'SELECT * FROM quote_speakers WHERE id=? LIMIT 1', (id,))
+
+        return cur.fetchone()
+
     @commands.command(help="Returns a quote from the database", usage="[id]")
     async def quote(self, ctx, id=-1):
         cur = db.get_cursor()
@@ -40,30 +47,16 @@ class QuotesCog(commands.Cog):
             if not user is None:
                 username = user.name
 
+            speaker = self.get_speaker(row["speaker"])
             dt = datetime.datetime.utcfromtimestamp(row["date"] / 1000)
             embed = discord.Embed(title='Quote #' + str(row["id"]), colour=0xFFFFFF, description=row["text"], timestamp=dt)
-            embed.set_author(name="Richard Burnish", icon_url=BURNISH_FACE_IMG)
+            embed.set_author(name=speaker["name"], icon_url=speaker["picture_url"], url="http://bot.montclairpublicaccess.info/quotes.php")
             embed.set_footer(text="Submitted by " + username)
             await ctx.send(embed=embed)
 
     @commands.command(help="Submit a quote to the database", usage="<text>")
     async def addquote(self, ctx, *args):
-        if len(args) < 1:
-            await ctx.send('<@%d> Syntax: `%saddquote <text>`' % (ctx.author.id, config.COMMAND_PREFIX))
-            return
-
-        text = ' '.join(args)
-        timestamp = int(round(time.time() * 1000))
-
-        cur = db.get_cursor()
-        db.execute(cur, 'INSERT INTO quotes (text, date, submitter, submitter_name) VALUES (?, ?, ?, ?)', (text, timestamp, ctx.author.id, ctx.author.name))
-        db.commit()
-
-        # now find its ID
-        db.execute(cur, 'SELECT id FROM quotes WHERE text=? AND date=? AND submitter=?', (text, timestamp, ctx.author.id))
-        row = cur.fetchone()
-
-        await ctx.send("Thank you, <@%d>! :pray: Your %s quote has been added as number %d." % (ctx.author.id, random.choice(ADJECTIVES), row["id"]))
+        await ctx.send("Please use the website to add quotes: <http://bot.montclairpublicaccess.info/auth/quotes.add.php>")
 
     @commands.command(help="Delete a quote from the database", usage="<id>")
     async def delquote(self, ctx, id):
