@@ -17,7 +17,13 @@ MESSAGES = [
     "Maybe take a shower first, AUTHORMENTION?",
     "Maybe ask blachool instead <a:blacube:727669022065295382>",
     "Pfft, you wish.",
-    "Even the Veggie Mobile Truck gets fucked more than you, AUTHORMENTION <a:GloriousDay:713767794566627338>"
+    "Even the Veggie Mobile Truck gets fucked more than you, AUTHORMENTION <a:GloriousDay:713767794566627338>",
+    "Not until I graduate elementary school",
+    "Lol my standards aren't *that* low",
+    "I'd rather fuck that harce back there",
+    "Not without condoms... or with them",
+    "The doctor recommended against it",
+    "What about the bees?"
 ]
 
 # Admins who aren't me or Richard get these
@@ -25,7 +31,8 @@ MESSAGES_ADMIN = [
     "fine.",
     "I'd rather not, but whatever.",
     "If you insist.",
-    "Ok..."
+    "Ok...",
+    "When I said 'I love you', AUTHORMENTION, I meant *familial* love, not romantic love..."
 ]
 
 # >= 10x
@@ -34,14 +41,27 @@ MESSAGES_MULTIPLIER = [
     "GodDAMN you're desperate!",
     "Ultra-Virgin!",
     "You better pay extra for this!",
-    "I really do take pity on you..."
+    "I really do take pity on you...",
+    "Can't you just accept this and go away?",
+    "I hope you're not like this in real life...",
+    "I can't take much more of this"
 ]
 
 # < 10x
 MESSAGES_SHITTY_MULTIPLIER = [
     "You're pretty desperate, huh?",
     "I mean, if you're *that* desperate...",
-    "This is going to cost you, AUTHORMENTION."
+    "This is going to cost you, AUTHORMENTION.",
+    "You don't deserve more than this, tbh"
+]
+
+APPEND_EMOJIS = [
+    "",
+    "<:patrick:717464136329592912>",
+    "<:burnished:412329154718072833>",
+    "<:SecksPuppet:770722496013402144>",
+    "<:Jebus:739245449323610242>",
+    "<:fedora:412330894377091084>"
 ]
 
 def get_random_string(length):
@@ -147,14 +167,19 @@ class SexCog(commands.Cog):
             # me!
             if ctx.author.id == 195246948847058954:
                 msg = "Yes daddy\\~\\~\\~\\~\\~"
+            # Travis special!
+            elif ctx.author.id == 190318086132465664:
+                msg = "But I'm not a board <:TravisGf:769302530467037215>"
             elif ctx.author.id in config.ADMINS:
                 msg = random.choice(MESSAGES_ADMIN)
             else:
                 msg = random.choice(MESSAGES)
 
         msg = msg.replace("AUTHORMENTION", ctx.author.mention)
+        sexcount = "(%s, you've asked for sex %s times.)" % (ctx.author.name + "#" + str(ctx.author.discriminator), f'{count:,}')
+        emoji = random.choice(APPEND_EMOJIS)
 
-        await ctx.send("%s (%s, you've asked for sex %s times.)" % (msg, ctx.author.name + "#" + str(ctx.author.discriminator), f'{count:,}'))
+        await ctx.send("%s %s %s" % (msg, sexcount, emoji))
 
     @commands.command(help="Lists the most desperate people")
     async def sexleaderboards(self, ctx):
