@@ -9,6 +9,7 @@ import string
 
 EMBED_ICON = "https://tohellandbot.s3-eu-west-1.amazonaws.com/static/SecksPuppet.png"
 
+# 1x
 MESSAGES = [
     "Not with you lol fuck off",
     "Sorry, AUTHORMENTION. You don't have sufficient Sex Privileges.",
@@ -19,6 +20,7 @@ MESSAGES = [
     "Even the Veggie Mobile Truck gets fucked more than you, AUTHORMENTION <a:GloriousDay:713767794566627338>"
 ]
 
+# Admins who aren't me or Richard get these
 MESSAGES_ADMIN = [
     "fine.",
     "I'd rather not, but whatever.",
@@ -26,6 +28,7 @@ MESSAGES_ADMIN = [
     "Ok..."
 ]
 
+# >= 10x
 MESSAGES_MULTIPLIER = [
     "Wow! You're SUPER desperate!",
     "GodDAMN you're desperate!",
@@ -34,6 +37,7 @@ MESSAGES_MULTIPLIER = [
     "I really do take pity on you..."
 ]
 
+# < 10x
 MESSAGES_SHITTY_MULTIPLIER = [
     "You're pretty desperate, huh?",
     "I mean, if you're *that* desperate...",
@@ -48,6 +52,7 @@ def get_random_string(length):
 class SexCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
 
     def user_has_sex(self, id):
         cur = db.get_cursor()
@@ -77,23 +82,37 @@ class SexCog(commands.Cog):
         return row[0] + 1
 
 
+    def chance(self, n):
+        ts = time.time()
+
+        # event starting 2020-10-28 00:00 UTC, lasts 24h
+        if ts >= 1603843200 and ts < 1603929600:
+            n /= 3
+
+        return random.randrange(0, int(n)) == 0
+
+
     @commands.command(help="sex !!")
     async def sex(self, ctx):
         timestamp = int(round(time.time()))
 
         amount = 1
-        if random.randrange(0, 1500) == 0:
+        if self.chance(1500):
             amount = 1000
-        elif random.randrange(0, 300) == 0:
+        elif self.chance(300):
             amount = 200
-        elif random.randrange(0, 100) == 0:
+        elif self.chance(100):
             amount = 100
-        elif random.randrange(0, 20) == 0:
+        elif self.chance(20):
             amount = 10
-        elif random.randrange(0, 15) == 0:
+        elif self.chance(15):
             amount = 5
-        elif random.randrange(0, 6) == 0:
+        elif self.chance(6):
             amount = 2
+
+        # Burnish gets more
+        if ctx.author.id == 688191761977311259:
+            amount = random.choice([1, 500, 2000, 5000])
 
         cur = db.get_cursor()
         db.commit()
@@ -102,6 +121,7 @@ class SexCog(commands.Cog):
             db.execute(cur, 'UPDATE sex_totals SET total=total+? WHERE user=?',
                        (amount, ctx.author.id))
         else:
+            amount = 1 # first time is always 1x
             db.execute(cur, 'INSERT INTO sex_totals (user, total) VALUES (?, ?)',
                        (ctx.author.id, amount))
         db.commit()
@@ -112,15 +132,20 @@ class SexCog(commands.Cog):
 
         count = row["total"]
 
-        if amount >= 10:
+        # Richard special message
+        if ctx.author.id == 688191761977311259:
+            msg = "YES DADDY!!!\\~\\~\\~\\~\\~\\~\\~\\~\\~"
+            if amount > 1:
+                msg += " **" + str(amount) + "\u00D7 BOOST**"
+        elif amount >= 10:
             msg = random.choice(MESSAGES_MULTIPLIER)
             msg += " **" + str(amount) + "\u00D7 BOOST**"
         elif amount > 1:
             msg = random.choice(MESSAGES_SHITTY_MULTIPLIER)
             msg += " **" + str(amount) + "\u00D7 boost.**"
         else:
-            # Burnish and I, respectively
-            if ctx.author.id == 688191761977311259 or ctx.author.id == 195246948847058954:
+            # me!
+            if ctx.author.id == 195246948847058954:
                 msg = "Yes daddy\\~\\~\\~\\~\\~"
             elif ctx.author.id in config.ADMINS:
                 msg = random.choice(MESSAGES_ADMIN)
@@ -181,3 +206,14 @@ class SexCog(commands.Cog):
             await ctx.send("No selfcest allowed")
         else:
             await ctx.send("If you're really desperate for sex, pester <@264844361341075467> about the spam channel. Also, this attempt has been reported to the police.")
+
+    @commands.command(hidden=True)
+    async def sexwithtravis(self, ctx):
+        if ctx.author.id == 190318086132465664:
+            await ctx.send("No selfcest allowed")
+        else:
+            await ctx.send("Sorry, Travis <:TalksToBoards:769303261667917864> only has sex with (male) boards <:TravisGf:769302530467037215>.")
+
+    @commands.command(hidden=True)
+    async def sexwithseamenator(self, ctx):
+        await ctx.send(":flushed:")
