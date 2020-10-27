@@ -119,4 +119,4 @@ class AdminCog(commands.Cog):
                 message.channel.send("Failed to send")
                 return
 
-            target.send(message.content)
+            await target.send(message.content)
