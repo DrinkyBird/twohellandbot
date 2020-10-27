@@ -110,3 +110,13 @@ class AdminCog(commands.Cog):
             val = h.heap()
 
             print(val)
+
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.channel.id == 770727540691959819:
+            target = self.bot.get_channel(688527547113537644)
+            if target == None:
+                message.channel.send("Failed to send")
+                return
+
+            target.send(message.content)
