@@ -117,6 +117,8 @@ class SexCog(commands.Cog):
         timestamp = int(round(time.time()))
 
         amount = 1
+        if self.chance(3000000):
+            amount = 5000
         if self.chance(1500):
             amount = 1000
         elif self.chance(300):
