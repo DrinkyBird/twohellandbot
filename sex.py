@@ -101,9 +101,18 @@ class SexCog(commands.Cog):
 
         return row[0] + 1
 
+    def get_total_counts(self):
+        cur = db.get_cursor()
+        db.execute(cur, "SELECT COUNT(*) FROM sex_totals")
+        return cur.fetchone()[0]
 
-    def chance(self, n):
+
+    def chance(self, user, n):
         ts = time.time()
+
+        irank = self.get_user_rank(user, False)
+        difficulty = max(0, (irank - 1) * self.get_total_counts())
+        n += difficulty
 
         # event starting 2020-10-28 00:00 UTC, lasts 24h
         if ts >= 1603843200 and ts < 1603929600:
@@ -117,19 +126,19 @@ class SexCog(commands.Cog):
         timestamp = int(round(time.time()))
 
         amount = 1
-        if self.chance(3000000):
+        if self.chance(ctx.author.id, 3000000):
             amount = 5000
-        if self.chance(1500):
+        if self.chance(ctx.author.id, 1500):
             amount = 1000
-        elif self.chance(300):
+        elif self.chance(ctx.author.id, 300):
             amount = 200
-        elif self.chance(100):
+        elif self.chance(ctx.author.id, 100):
             amount = 100
-        elif self.chance(20):
+        elif self.chance(ctx.author.id, 20):
             amount = 10
-        elif self.chance(15):
+        elif self.chance(ctx.author.id, 15):
             amount = 5
-        elif self.chance(6):
+        elif self.chance(ctx.author.id, 6):
             amount = 2
 
         # Burnish gets more
@@ -203,7 +212,7 @@ class SexCog(commands.Cog):
 
         embed = discord.Embed(title="Most Desperate Leaderboard", color=0xFF7FED)
         embed.set_author(name="Burnish & Co. !sex Services LLC", icon_url=EMBED_ICON, url="http://bot.montclairpublicaccess.info/sex.php")
-        embed.set_footer(text=f'{totalsex:,} total requests for sex')
+        embed.set_footer(text=f'{totalsex:,} total requests for sex | {self.get_total_counts():,} users have asked for sex')
 
         topuser = self.bot.get_user(sort[0])
         if not topuser is None:
