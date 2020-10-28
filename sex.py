@@ -110,13 +110,20 @@ class SexCog(commands.Cog):
     def chance(self, user, n):
         ts = time.time()
 
+        print('user = ' + str(user))
+        print('input n = ' + str(n))
+
         irank = self.get_user_rank(user, False)
         difficulty = max(0, (irank - 1) * self.get_total_counts())
         n += difficulty
 
+        print('difficulty = ' + str(difficulty))
+        print('total n = ' + str(n))
+
         # event starting 2020-10-28 00:00 UTC, lasts 24h
         if ts >= 1603843200 and ts < 1603929600:
             n /= 3
+            print('Event active, n = ' + str(n))
 
         return random.randrange(0, int(n)) == 0
 
