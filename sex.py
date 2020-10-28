@@ -114,7 +114,7 @@ class SexCog(commands.Cog):
         print('input n = ' + str(n))
 
         irank = self.get_user_rank(user, False)
-        difficulty = max(0, (irank - 1) * self.get_total_counts())
+        difficulty = max(0, (irank - 1) * (self.get_total_counts() / irank))
         n += difficulty
 
         print('difficulty = ' + str(difficulty))
