@@ -125,7 +125,9 @@ class SexCog(commands.Cog):
             n /= 3
             print('Event active, n = ' + str(n))
 
-        return random.randrange(0, int(n)) == 0
+        val = random.randrange(0, int(n))
+        print(val)
+        return val == 0
 
 
     @commands.command(help="sex !!")
