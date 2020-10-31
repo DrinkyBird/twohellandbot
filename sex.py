@@ -254,3 +254,7 @@ class SexCog(commands.Cog):
     @commands.command(hidden=True)
     async def sexwithseamenator(self, ctx):
         await ctx.send(":flushed:")
+
+    @commands.command(hidden=True, aliases=['sexwithking'])
+    async def sexwithsiggus(self, ctx):
+        await ctx.send("Sex with Siggus cannot be requested, it just happens <:siggus:758007416553209976>")
