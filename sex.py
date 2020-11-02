@@ -64,11 +64,6 @@ APPEND_EMOJIS = [
     "<:fedora:412330894377091084>"
 ]
 
-def get_random_string(length):
-    letters = string.ascii_letters
-    result_str = ''.join(random.choice(letters) for i in range(length))
-    return result_str
-
 class SexCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -114,15 +109,11 @@ class SexCog(commands.Cog):
         difficulty = max(0, (irank - 1) * (self.get_total_counts() / irank))
         n += difficulty
 
-        # event starting 2020-10-28 00:00 UTC, lasts 24h
-        if ts >= 1603843200 and ts < 1603929600:
-            n /= 3
-
         val = random.randrange(0, int(n))
         return val == 0
 
 
-    @commands.command(help="sex !!")
+    @commands.command(help="sex !!", aliases=['sexwithseamenator', 'sexwithtohellandbot'])
     async def sex(self, ctx):
         timestamp = int(round(time.time()))
 
@@ -235,7 +226,11 @@ class SexCog(commands.Cog):
             if i >= MAX_USERS:
                 break
 
-        await ctx.send(embed=embed)
+        msg = "%s, you are currently position %d on the leaderboard." \
+              % (ctx.author.name + "#" + str(ctx.author.discriminator), self.get_user_rank(ctx.author.id, True))
+
+        await ctx.send(msg, embed=embed)
+
 
     @commands.command(hidden=True)
     async def sexwithsean(self, ctx):
@@ -244,6 +239,7 @@ class SexCog(commands.Cog):
         else:
             await ctx.send("If you're really desperate for sex, pester <@264844361341075467> about the spam channel. Also, this attempt has been reported to the police.")
 
+
     @commands.command(hidden=True)
     async def sexwithtravis(self, ctx):
         if ctx.author.id == 190318086132465664:
@@ -251,9 +247,6 @@ class SexCog(commands.Cog):
         else:
             await ctx.send("Sorry, Travis <:TalksToBoards:769303261667917864> only has sex with (male) boards <:TravisGf:769302530467037215>.")
 
-    @commands.command(hidden=True)
-    async def sexwithseamenator(self, ctx):
-        await ctx.send(":flushed:")
 
     @commands.command(hidden=True, aliases=['sexwithking'])
     async def sexwithsiggus(self, ctx):
