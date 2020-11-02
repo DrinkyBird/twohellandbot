@@ -102,11 +102,30 @@ class SexCog(commands.Cog):
         return cur.fetchone()[0]
 
 
+    def get_user_difficulty(self, user):
+        irank = self.get_user_rank(user, False)
+        difficulty = max(0, (irank - 1) * (self.get_total_counts() / irank))
+
+        return difficulty
+
+
+    def get_user_sex(self, user):
+        cur = db.get_cursor()
+
+        db.execute(cur, 'SELECT total FROM sex_totals WHERE user=?', (user,))
+        row = cur.fetchone()
+
+        if row is None:
+            return -1
+
+        count = row["total"]
+        return count
+
+
     def chance(self, user, n):
         ts = time.time()
 
-        irank = self.get_user_rank(user, False)
-        difficulty = max(0, (irank - 1) * (self.get_total_counts() / irank))
+        difficulty = self.get_user_difficulty(user)
         n += difficulty
 
         val = random.randrange(0, int(n))
@@ -149,11 +168,7 @@ class SexCog(commands.Cog):
                        (ctx.author.id, amount))
         db.commit()
 
-
-        db.execute(cur, 'SELECT total FROM sex_totals WHERE user=?', (ctx.author.id,))
-        row = cur.fetchone()
-
-        count = row["total"]
+        count = self.get_user_sex(ctx.author.id)
 
         # Richard special message
         if ctx.author.id == 688191761977311259:
@@ -230,6 +245,33 @@ class SexCog(commands.Cog):
               % (ctx.author.name + "#" + str(ctx.author.discriminator), self.get_user_rank(ctx.author.id, True))
 
         await ctx.send(msg, embed=embed)
+
+
+    @commands.command(hidden=True)
+    async def sexinfo(self, ctx, user=None):
+        if user is None:
+            user = ctx.author.id
+            discorduser = ctx.author
+        else:
+            discorduser = self.bot.get_user(int(user))
+            if discorduser is None:
+                await ctx.send("No such user with ID " + str(user))
+                return
+
+        has = self.user_has_sex(user)
+        total = self.get_user_sex(user)
+        rank = self.get_user_rank(user, True)
+        irank = self.get_user_rank(user, False)
+        difficulty = self.get_user_difficulty(user)
+
+        embed = discord.Embed(title="!sex info for " + discorduser.name + "#" + str(discorduser.discriminator))
+        embed.add_field(name="hasSex", value=str(has), inline=True)
+        embed.add_field(name="totalSex", value=str(total), inline=True)
+        embed.add_field(name="rank", value=str(rank), inline=True)
+        embed.add_field(name="irank", value=str(irank), inline=True)
+        embed.add_field(name="difficulty", value=str(difficulty), inline=True)
+
+        await ctx.send(embed=embed)
 
 
     @commands.command(hidden=True)
