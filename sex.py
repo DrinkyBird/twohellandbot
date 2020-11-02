@@ -110,7 +110,7 @@ class SexCog(commands.Cog):
 
         worst = self.get_worst_rank()
 
-        difficulty = max(0, 1.0 - ((rank - 1) / worst))
+        difficulty = max(0, 1.0 - ((rank - 1) / (worst - 1)))
 
         return difficulty
 
