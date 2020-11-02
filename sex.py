@@ -68,7 +68,6 @@ class SexCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-
     def user_has_sex(self, id):
         cur = db.get_cursor()
         db.execute(cur, "SELECT total FROM sex_totals WHERE user = ?", (id,))
@@ -77,7 +76,6 @@ class SexCog(commands.Cog):
         if row is None or row["total"] < 1:
             return False
         return True
-
 
     def get_user_rank(self, id, descending):
         if not self.user_has_sex(id):
@@ -101,7 +99,6 @@ class SexCog(commands.Cog):
         db.execute(cur, "SELECT COUNT(*) FROM sex_totals")
         return cur.fetchone()[0]
 
-
     # returns difficulty multiplier for given user
     def get_user_difficulty(self, user):
         rank = self.get_user_rank(user, True)
@@ -114,7 +111,6 @@ class SexCog(commands.Cog):
 
         return difficulty
 
-
     def get_user_sex(self, user):
         cur = db.get_cursor()
 
@@ -126,7 +122,6 @@ class SexCog(commands.Cog):
 
         count = row["total"]
         return count
-
 
     def get_worst_rank(self):
         cur = db.get_cursor()
@@ -148,7 +143,6 @@ class SexCog(commands.Cog):
 
         val = random.randrange(0, int(n))
         return val == 0
-
 
     @commands.command(help="sex !!", aliases=['sexwithseamenator', 'sexwithtohellandbot'])
     async def sex(self, ctx):
@@ -264,7 +258,6 @@ class SexCog(commands.Cog):
 
         await ctx.send(msg, embed=embed)
 
-
     @commands.command(hidden=True)
     async def sexinfo(self, ctx, user=None):
         if user is None:
@@ -291,7 +284,6 @@ class SexCog(commands.Cog):
 
         await ctx.send(embed=embed)
 
-
     @commands.command(hidden=True)
     async def sexwithsean(self, ctx):
         if ctx.author.id == 195246948847058954:
@@ -299,14 +291,12 @@ class SexCog(commands.Cog):
         else:
             await ctx.send("If you're really desperate for sex, pester <@264844361341075467> about the spam channel. Also, this attempt has been reported to the police.")
 
-
     @commands.command(hidden=True)
     async def sexwithtravis(self, ctx):
         if ctx.author.id == 190318086132465664:
             await ctx.send("No selfcest allowed")
         else:
             await ctx.send("Sorry, Travis <:TalksToBoards:769303261667917864> only has sex with (male) boards <:TravisGf:769302530467037215>.")
-
 
     @commands.command(hidden=True, aliases=['sexwithking'])
     async def sexwithsiggus(self, ctx):
