@@ -102,9 +102,15 @@ class SexCog(commands.Cog):
         return cur.fetchone()[0]
 
 
+    # returns difficulty multiplier for given user
     def get_user_difficulty(self, user):
-        irank = self.get_user_rank(user, False)
-        difficulty = max(0, (irank - 1) * (self.get_total_counts() / irank))
+        rank = self.get_user_rank(user, True)
+        if rank == -1:
+            return 1
+
+        worst = self.get_worst_rank()
+
+        difficulty = max(0, 1.0 - ((rank - 1) / worst))
 
         return difficulty
 
@@ -122,11 +128,23 @@ class SexCog(commands.Cog):
         return count
 
 
+    def get_worst_rank(self):
+        cur = db.get_cursor()
+        db.execute(cur, 'SELECT user FROM sex_totals')
+        rows = cur.fetchall()
+
+        result = -1
+        for row in rows:
+            rank = self.get_user_rank(row['user'], True)
+            result = max(result, rank)
+
+        return result
+
     def chance(self, user, n):
         ts = time.time()
 
         difficulty = self.get_user_difficulty(user)
-        n += difficulty
+        n *= 1.0 + difficulty
 
         val = random.randrange(0, int(n))
         return val == 0
