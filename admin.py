@@ -105,6 +105,17 @@ class AdminCog(commands.Cog):
 
                 os.remove(filepath)
 
+    @commands.command(hidden=True)
+    async def ver(self, ctx):
+        s = ''
+        s += 'Python: `%s`\n' % (sys.version)
+        s += 'discord.py: `%s`\n' % (discord.__version__)
+
+        if hasattr(os, 'uname'):
+            s += 'uname: `%s`\n' % (str(os.uname()))
+
+        await ctx.send(s)
+
     @commands.command(help="Show heap analysis", hidden=True)
     async def heap(self, ctx):
         if ctx.author.id in config.ADMINS:
