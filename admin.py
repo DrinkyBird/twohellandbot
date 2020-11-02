@@ -63,10 +63,12 @@ class AdminCog(commands.Cog):
                 await ctx.send('Error: ' + str(e))
                 return
 
+            affected = cur.rowcount
+
             rows = cur.fetchall()
 
             if len(rows) < 1:
-                await ctx.send('0 rows returned.')
+                await ctx.send('0 rows returned, '  +str(affected) + ' affected.')
                 return
 
             table = []
@@ -86,7 +88,7 @@ class AdminCog(commands.Cog):
                 i += 1
 
             tabulated = tabulate(table, headers, tablefmt="presto", numalign="left", stralign="left")
-            out = '%d row%s returned.\n' % (len(rows), "" if len(rows) == 1 else "s")
+            out = '%d row%s returned, %d affected.\n' % (len(rows), "" if len(rows) == 1 else "s", affected)
 
             if len(tabulated) < 1800:
                 out += '```\n'
