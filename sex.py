@@ -22,7 +22,7 @@ MESSAGES = [
     "Lol my standards aren't *that* low",
     "I'd rather fuck that harce back there",
     "Not without condoms... or with them",
-    "The doctor recommended against it",
+    "The doctor recommends against it...",
     "What about the bees?"
 ]
 
@@ -52,7 +52,7 @@ MESSAGES_SHITTY_MULTIPLIER = [
     "You're pretty desperate, huh?",
     "I mean, if you're *that* desperate...",
     "This is going to cost you, AUTHORMENTION.",
-    "You don't deserve more than this, tbh"
+    "You don't deserve more than this, tbh."
 ]
 
 APPEND_EMOJIS = [
