@@ -96,6 +96,9 @@ class Obkov:
         if root is None:
             root = random.choice(list(self.words.keys()))
 
+        if not root in self.words:
+            return None
+
         words = [root]
         next_root = root
         i = 0
@@ -181,6 +184,10 @@ class ObkovCog(commands.Cog):
     @commands.command(help="Generate a sentence", syntax="rootWord", aliases=["obkov"])
     async def sentence(self, ctx, root_word=None):
         message = self.obkov.generate_sentence(root_word)
+
+        if message is None and root_word is not None:
+            await ctx.send(f'I have nothing to say about "{root_word}".')
+            return
 
         if message:
             await ctx.send(message)
