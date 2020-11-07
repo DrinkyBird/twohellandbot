@@ -41,6 +41,8 @@ COMMAND_PREFIX = '!'
 # Your web directory and URL prefix
 WWWDATA_PATH = "C:/Users/DrinkyBird/Dev/twohellandbot/s3"
 WWWDATA_URL = "https://tohellandbot.s3-eu-west-1.amazonaws.com"
+
+OBKOV_PATH = "C:/Users/DrinkyBird/Dev/twohellandbot/markov.json"
 ```
 
 ## Database schema

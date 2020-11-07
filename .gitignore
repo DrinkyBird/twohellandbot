@@ -141,3 +141,4 @@ s3/
 *.sqlite
 .idea/
 config.py
+markov.json
