@@ -53,7 +53,7 @@ class Obkov:
             already_in = False
             for i in range(len(self.words[word])):
                 next = self.words[word][i]
-                if next[0] == word:
+                if next[0] == next_word:
                     self.words[word][i][1] += 1
                     already_in = True
                     break
