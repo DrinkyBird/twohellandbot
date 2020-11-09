@@ -165,7 +165,10 @@ class ObkovCog(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         # Don't count our own messages
-        if message.author.id == self.bot.user.id:
+        if message.author.id == self.bot.user.id or message.author.bot:
+            return
+
+        if message.author.id in config.OBKOV_IGNORE_LIST:
             return
 
         text = message.content
