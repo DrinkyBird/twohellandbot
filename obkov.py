@@ -95,6 +95,8 @@ class Obkov:
 
         if root is None:
             root = random.choice(list(self.words.keys()))
+        else:
+            root = root.lower()
 
         if not root in self.words:
             return None
