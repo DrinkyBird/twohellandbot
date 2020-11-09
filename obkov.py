@@ -172,6 +172,8 @@ class ObkovCog(commands.Cog):
             return
 
         text = message.content
+        if not text:
+            return
 
         # Ensure the first character is alphanumeric before learning
         if not text[0].isalnum():
