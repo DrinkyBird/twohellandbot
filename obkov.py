@@ -200,7 +200,7 @@ class ObkovCog(commands.Cog):
             if len(message) > 1950:
                 message = message[:1950]
                 message += "..."
-                
+
             await ctx.send(message)
 
     @commands.command(help="Train from a file", hidden=True)
@@ -218,8 +218,8 @@ class ObkovCog(commands.Cog):
 
                 await ctx.send(f'Trained on {len(words)} words')
 
-    @commands.command(help="Show stats about the database")
-    async def obkovstats(self, ctx):
+    @commands.command(help="Show stats about the database", aliases=['obkovstats'])
+    async def sentencestats(self, ctx):
         embed = discord.Embed(title="Stats")
         embed.add_field(name="Root Words", value=f'{len(self.obkov.words):,}')
         embed.add_field(name="Last Generation Duration", value=f'{self.obkov.last_generation_duration * 1000:.3f} ms')
