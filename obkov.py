@@ -90,7 +90,7 @@ class Obkov:
 
         return None
 
-    def generate_sentence(self, root=None, max_words=30):
+    def generate_sentence(self, root=None, max_words=70):
         start = time.time()
 
         if root is None:
@@ -197,6 +197,10 @@ class ObkovCog(commands.Cog):
             return
 
         if message:
+            if len(message) > 1950:
+                message = message[:1950]
+                message += "..."
+                
             await ctx.send(message)
 
     @commands.command(help="Train from a file", hidden=True)
