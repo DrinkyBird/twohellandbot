@@ -200,7 +200,7 @@ class ObkovCog(commands.Cog):
             message = self.obkov.generate_sentence(root_word)
 
             if self.obkov.last_generation_duration < WAIT_TIME:
-                await asyncio.sleep(WAIT_TIME - self.obkov.last_generation_duration)
+                await asyncio.sleep((WAIT_TIME - self.obkov.last_generation_duration) / 1000)
 
             if message is None and root_word is not None:
                 await ctx.send(f'I have nothing to say about "{root_word}".')
