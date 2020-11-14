@@ -124,6 +124,17 @@ class AdminCog(commands.Cog):
 
             print(val)
 
+    @commands.command(help="Set bot nickname", hidden=True)
+    async def nickname(self, ctx, *args):
+        if ctx.author.id in config.ADMINS:
+            member = ctx.message.guild.get_member(self.bot.user.id)
+            await member.edit(nick=' '.join(args))
+
+            try:
+                await ctx.message.delete()
+            except:
+                print("Couldn't delete !nickname message")
+
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.channel.id == 770727540691959819:

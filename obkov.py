@@ -193,18 +193,19 @@ class ObkovCog(commands.Cog):
         if not util.check_ratelimiting(ctx):
             return
 
-        message = self.obkov.generate_sentence(root_word)
+        with ctx.typing():
+            message = self.obkov.generate_sentence(root_word)
 
-        if message is None and root_word is not None:
-            await ctx.send(f'I have nothing to say about "{root_word}".')
-            return
+            if message is None and root_word is not None:
+                await ctx.send(f'I have nothing to say about "{root_word}".')
+                return
 
-        if message:
-            if len(message) > 1950:
-                message = message[:1950]
-                message += "..."
+            if message:
+                if len(message) > 1950:
+                    message = message[:1950]
+                    message += "..."
 
-            await ctx.send(message)
+                await ctx.send(message)
 
     @commands.command(help="Train from a file", hidden=True)
     async def trainfile(self, ctx, path):

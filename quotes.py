@@ -29,31 +29,34 @@ class QuotesCog(commands.Cog):
         if not util.check_ratelimiting(ctx):
             return
 
-        cur = db.get_cursor()
+        with ctx.typing():
+            cur = db.get_cursor()
 
-        # specific quote id
-        if id != -1:
-            db.execute(cur, 'SELECT * FROM quotes WHERE id=? LIMIT 1', (id,))
-        # random quote
-        else:
-            db.execute(cur, 'SELECT * FROM quotes ORDER BY RANDOM() LIMIT 1')
+            # specific quote id
+            if id != -1:
+                db.execute(cur, 'SELECT * FROM quotes WHERE id=? LIMIT 1', (id,))
+            # random quote
+            else:
+                db.execute(cur, 'SELECT * FROM quotes ORDER BY RANDOM() LIMIT 1')
 
-        row = cur.fetchone()
+            row = cur.fetchone()
 
-        if row is None:
-            await ctx.send('There is no quote with ID ' + str(id))
-        else:
-            user = self.bot.get_user(int(row["submitter"]))
-            username = row["submitter_name"]
-            if not user is None:
-                username = user.name
+            if row is None:
+                await ctx.send('There is no quote with ID ' + str(id))
+            else:
+                user = self.bot.get_user(int(row["submitter"]))
+                username = row["submitter_name"]
+                if not user is None:
+                    username = user.name
 
-            speaker = self.get_speaker(row["speaker"])
-            dt = datetime.datetime.utcfromtimestamp(row["date"] / 1000)
-            embed = discord.Embed(title='Quote #' + str(row["id"]), colour=0xFFFFFF, description=row["text"], timestamp=dt)
-            embed.set_author(name=speaker["name"], icon_url=speaker["picture_url"], url="http://bot.montclairpublicaccess.info/quotes.php")
-            embed.set_footer(text="Submitted by " + username)
-            await ctx.send(embed=embed)
+                speaker = self.get_speaker(row["speaker"])
+                dt = datetime.datetime.utcfromtimestamp(row["date"] / 1000)
+                embed = discord.Embed(title='Quote #' + str(row["id"]), colour=0xFFFFFF, description=row["text"],
+                                      timestamp=dt)
+                embed.set_author(name=speaker["name"], icon_url=speaker["picture_url"],
+                                 url="http://bot.montclairpublicaccess.info/quotes.php")
+                embed.set_footer(text="Submitted by " + username)
+                await ctx.send(embed=embed)
 
     @commands.command(hidden=True)
     async def addquote(self, ctx):

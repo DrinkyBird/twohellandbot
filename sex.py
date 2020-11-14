@@ -149,120 +149,123 @@ class SexCog(commands.Cog):
         if not util.check_ratelimiting(ctx):
             return
 
-        timestamp = int(round(time.time()))
+        with ctx.typing():
+            amount = 1
+            if self.chance(ctx.author.id, 60000):
+                amount = 5000
+            if self.chance(ctx.author.id, 1500):
+                amount = 1000
+            elif self.chance(ctx.author.id, 300):
+                amount = 200
+            elif self.chance(ctx.author.id, 100):
+                amount = 100
+            elif self.chance(ctx.author.id, 20):
+                amount = 10
+            elif self.chance(ctx.author.id, 15):
+                amount = 5
+            elif self.chance(ctx.author.id, 6):
+                amount = 2
 
-        amount = 1
-        if self.chance(ctx.author.id, 60000):
-            amount = 5000
-        if self.chance(ctx.author.id, 1500):
-            amount = 1000
-        elif self.chance(ctx.author.id, 300):
-            amount = 200
-        elif self.chance(ctx.author.id, 100):
-            amount = 100
-        elif self.chance(ctx.author.id, 20):
-            amount = 10
-        elif self.chance(ctx.author.id, 15):
-            amount = 5
-        elif self.chance(ctx.author.id, 6):
-            amount = 2
+            # Burnish gets more
+            if ctx.author.id == 688191761977311259:
+                amount = random.choice([1, 500, 2000, 5000])
 
-        # Burnish gets more
-        if ctx.author.id == 688191761977311259:
-            amount = random.choice([1, 500, 2000, 5000])
+            cur = db.get_cursor()
+            db.commit()
 
-        cur = db.get_cursor()
-        db.commit()
-
-        if self.user_has_sex(ctx.author.id):
-            db.execute(cur, 'UPDATE sex_totals SET total=total+? WHERE user=?',
-                       (amount, ctx.author.id))
-        else:
-            amount = 1 # first time is always 1x
-            db.execute(cur, 'INSERT INTO sex_totals (user, total) VALUES (?, ?)',
-                       (ctx.author.id, amount))
-        db.commit()
-
-        count = self.get_user_sex(ctx.author.id)
-
-        # Richard special message
-        if ctx.author.id == 688191761977311259:
-            msg = "YES DADDY!!!\\~\\~\\~\\~\\~\\~\\~\\~\\~"
-            if amount > 1:
-                msg += " **" + str(amount) + "\u00D7 BOOST**"
-        elif amount >= 10:
-            msg = random.choice(MESSAGES_MULTIPLIER)
-            msg += " **" + str(amount) + "\u00D7 BOOST**"
-        elif amount > 1:
-            msg = random.choice(MESSAGES_SHITTY_MULTIPLIER)
-            msg += " **" + str(amount) + "\u00D7 boost.**"
-        else:
-            # me!
-            if ctx.author.id == 195246948847058954:
-                msg = "Yes daddy\\~\\~\\~\\~\\~"
-            # Travis special!
-            elif ctx.author.id == 190318086132465664:
-                msg = "But I'm not a board <:TravisGf:769302530467037215>"
-            elif ctx.author.id in config.ADMINS:
-                msg = random.choice(MESSAGES_ADMIN)
+            if self.user_has_sex(ctx.author.id):
+                db.execute(cur, 'UPDATE sex_totals SET total=total+? WHERE user=?',
+                           (amount, ctx.author.id))
             else:
-                msg = random.choice(MESSAGES)
+                amount = 1  # first time is always 1x
+                db.execute(cur, 'INSERT INTO sex_totals (user, total) VALUES (?, ?)',
+                           (ctx.author.id, amount))
+            db.commit()
 
-        msg = msg.replace("AUTHORMENTION", ctx.author.mention)
-        sexcount = "(%s, you've asked for sex %s times.)" % (ctx.author.name + "#" + str(ctx.author.discriminator), f'{count:,}')
-        emoji = random.choice(APPEND_EMOJIS)
+            count = self.get_user_sex(ctx.author.id)
 
-        await ctx.send("%s %s %s" % (msg, sexcount, emoji))
+            # Richard special message
+            if ctx.author.id == 688191761977311259:
+                msg = "YES DADDY!!!\\~\\~\\~\\~\\~\\~\\~\\~\\~"
+                if amount > 1:
+                    msg += " **" + str(amount) + "\u00D7 BOOST**"
+            elif amount >= 10:
+                msg = random.choice(MESSAGES_MULTIPLIER)
+                msg += " **" + str(amount) + "\u00D7 BOOST**"
+            elif amount > 1:
+                msg = random.choice(MESSAGES_SHITTY_MULTIPLIER)
+                msg += " **" + str(amount) + "\u00D7 boost.**"
+            else:
+                # me!
+                if ctx.author.id == 195246948847058954:
+                    msg = "Yes daddy\\~\\~\\~\\~\\~"
+                # Travis special!
+                elif ctx.author.id == 190318086132465664:
+                    msg = "But I'm not a board <:TravisGf:769302530467037215>"
+                elif ctx.author.id in config.ADMINS:
+                    msg = random.choice(MESSAGES_ADMIN)
+                else:
+                    msg = random.choice(MESSAGES)
+
+            msg = msg.replace("AUTHORMENTION", ctx.author.mention)
+            sexcount = "(%s, you've asked for sex %s times.)" % (
+            ctx.author.name + "#" + str(ctx.author.discriminator), f'{count:,}')
+            emoji = random.choice(APPEND_EMOJIS)
+
+            await ctx.send("%s %s %s" % (msg, sexcount, emoji))
 
     @commands.command(help="Lists the most desperate people")
     async def sexleaderboards(self, ctx):
         if not util.check_ratelimiting(ctx):
             return
 
-        MAX_USERS = 10
+        with ctx.typing():
+            MAX_USERS = 10
 
-        cur = db.get_cursor()
-        db.execute(cur, 'SELECT * FROM sex_totals')
-        rows = cur.fetchall()
+            cur = db.get_cursor()
+            db.execute(cur, 'SELECT * FROM sex_totals')
+            rows = cur.fetchall()
 
-        countmap = {}
-        totalsex = 0
+            countmap = {}
+            totalsex = 0
 
-        for row in rows:
-            user = int(row["user"])
-            countmap[user] = row["total"]
-            totalsex += row["total"]
+            for row in rows:
+                user = int(row["user"])
+                countmap[user] = row["total"]
+                totalsex += row["total"]
 
-        sort = sorted(countmap, key=countmap.get, reverse=True)
+            sort = sorted(countmap, key=countmap.get, reverse=True)
 
-        embed = discord.Embed(title="Most Desperate Leaderboard", color=0xFF7FED)
-        embed.set_author(name="Burnish & Co. !sex Services LLC", icon_url=EMBED_ICON, url="http://bot.montclairpublicaccess.info/sex.php")
-        embed.set_footer(text=f'{totalsex:,} total requests for sex | {self.get_total_counts():,} users have asked for sex')
+            embed = discord.Embed(title="Most Desperate Leaderboard", color=0xFF7FED)
+            embed.set_author(name="Burnish & Co. !sex Services LLC", icon_url=EMBED_ICON,
+                             url="http://bot.montclairpublicaccess.info/sex.php")
+            embed.set_footer(
+                text=f'{totalsex:,} total requests for sex | {self.get_total_counts():,} users have asked for sex')
 
-        topuser = self.bot.get_user(sort[0])
-        if not topuser is None:
-            embed.set_thumbnail(url=topuser.avatar_url)
+            topuser = self.bot.get_user(sort[0])
+            if not topuser is None:
+                embed.set_thumbnail(url=topuser.avatar_url)
 
-        i = 0
-        for user in sort:
-            value = countmap[user]
-            pos = self.get_user_rank(user, True)
+            i = 0
+            for user in sort:
+                value = countmap[user]
+                pos = self.get_user_rank(user, True)
 
-            discorduser = self.bot.get_user(user)
-            username = "Unknown user ID `" + str(user) + "`"
-            if not discorduser is None:
-                username = discorduser.name + "#" + discorduser.discriminator
+                discorduser = self.bot.get_user(user)
+                username = "Unknown user ID `" + str(user) + "`"
+                if not discorduser is None:
+                    username = discorduser.name + "#" + discorduser.discriminator
 
-            embed.add_field(name=str(pos) + ". " + username, value=f'{value:,}' + " requests for sex", inline=True)
+                embed.add_field(name=str(pos) + ". " + username, value=f'{value:,}' + " requests for sex", inline=True)
 
-            i += 1
-            if i >= MAX_USERS:
-                break
+                i += 1
+                if i >= MAX_USERS:
+                    break
 
-        msg = "%s, you are currently position %d on the leaderboard." \
-              % (ctx.author.name + "#" + str(ctx.author.discriminator), self.get_user_rank(ctx.author.id, True))
+            msg = "%s, you are currently position %d on the leaderboard." \
+                  % (ctx.author.name + "#" + str(ctx.author.discriminator), self.get_user_rank(ctx.author.id, True))
 
-        await ctx.send(msg, embed=embed)
+            await ctx.send(msg, embed=embed)
 
     @commands.command(hidden=True)
     async def sexinfo(self, ctx, user=None):
