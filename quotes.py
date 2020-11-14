@@ -1,10 +1,8 @@
 import discord
-import config
 from discord.ext import commands
 import db
 import datetime
-import time
-import random
+import util
 
 BURNISH_FACE_IMG = "https://tohellandbot.s3-eu-west-1.amazonaws.com/static/RichardBurnishface.jpg"
 ADJECTIVES = [
@@ -28,6 +26,9 @@ class QuotesCog(commands.Cog):
 
     @commands.command(help="Returns a quote from the database", usage="[id]")
     async def quote(self, ctx, id=-1):
+        if not util.check_ratelimiting(ctx):
+            return
+
         cur = db.get_cursor()
 
         # specific quote id
@@ -56,18 +57,29 @@ class QuotesCog(commands.Cog):
 
     @commands.command(hidden=True)
     async def addquote(self, ctx):
+        if not util.check_ratelimiting(ctx):
+            return
+
         await ctx.send("Please use the website to add quotes: <http://bot.montclairpublicaccess.info/quotes.php>")
 
     @commands.command(hidden=True)
     async def delquote(self, ctx):
+        if not util.check_ratelimiting(ctx):
+            return
+
         await ctx.send("Please use the website to delete quotes: <http://bot.montclairpublicaccess.info/quotes.php>")
 
     @commands.command(hidden=True)
     async def editquote(self, ctx):
+        if not util.check_ratelimiting(ctx):
+            return
+
         await ctx.send("Please use the website to edit quotes: <http://bot.montclairpublicaccess.info/quotes.php>")
 
     @commands.command(help="Shows statistics about the quote database")
     async def quotestats(self, ctx):
+        if not util.check_ratelimiting(ctx):
+            return
 
         cur = db.get_cursor()
         db.execute(cur, 'SELECT COUNT(id) FROM quotes')

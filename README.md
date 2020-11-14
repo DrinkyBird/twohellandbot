@@ -42,6 +42,10 @@ COMMAND_PREFIX = '!'
 WWWDATA_PATH = "C:/Users/DrinkyBird/Dev/twohellandbot/s3"
 WWWDATA_URL = "https://tohellandbot.s3-eu-west-1.amazonaws.com"
 
+# If a user uses more than RATELIMIT_MESSAGES commands in RATELIMIT_PERIOD they are ignored
+RATELIMIT_PERIOD = 2 * 60
+RATELIMIT_MESSAGES = 4
+
 OBKOV_PATH = "C:/Users/DrinkyBird/Dev/twohellandbot/markov.json"
 ```
 

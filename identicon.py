@@ -5,6 +5,7 @@ import config
 import hashlib
 import sys
 import os
+import util
 
 class IdenticonCog(commands.Cog):
     def __init__(self):
@@ -21,6 +22,9 @@ class IdenticonCog(commands.Cog):
 
     @commands.command(help="Generates an identicon for a string", usage="[string]")
     async def identicon(self, ctx, *args):
+        if not util.check_ratelimiting(ctx):
+            return
+
         name = ctx.author.name
         if len(args) > 0:
             name = ' '.join(args)

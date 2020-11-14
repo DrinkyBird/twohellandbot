@@ -5,7 +5,7 @@ import db
 import time
 import random
 import config
-import string
+import util
 
 EMBED_ICON = "https://tohellandbot.s3-eu-west-1.amazonaws.com/static/SecksPuppet.png"
 
@@ -146,6 +146,9 @@ class SexCog(commands.Cog):
 
     @commands.command(help="sex !!", aliases=['sexwithseamenator', 'sexwithtohellandbot'])
     async def sex(self, ctx):
+        if not util.check_ratelimiting(ctx):
+            return
+
         timestamp = int(round(time.time()))
 
         amount = 1
@@ -213,6 +216,9 @@ class SexCog(commands.Cog):
 
     @commands.command(help="Lists the most desperate people")
     async def sexleaderboards(self, ctx):
+        if not util.check_ratelimiting(ctx):
+            return
+
         MAX_USERS = 10
 
         cur = db.get_cursor()
@@ -260,6 +266,9 @@ class SexCog(commands.Cog):
 
     @commands.command(hidden=True)
     async def sexinfo(self, ctx, user=None):
+        if not util.check_ratelimiting(ctx):
+            return
+
         if user is None:
             user = ctx.author.id
             discorduser = ctx.author
@@ -286,6 +295,9 @@ class SexCog(commands.Cog):
 
     @commands.command(hidden=True)
     async def sexwithsean(self, ctx):
+        if not util.check_ratelimiting(ctx):
+            return
+
         if ctx.author.id == 195246948847058954:
             await ctx.send("No selfcest allowed")
         else:
@@ -293,6 +305,9 @@ class SexCog(commands.Cog):
 
     @commands.command(hidden=True)
     async def sexwithtravis(self, ctx):
+        if not util.check_ratelimiting(ctx):
+            return
+
         if ctx.author.id == 190318086132465664:
             await ctx.send("No selfcest allowed")
         else:
@@ -300,4 +315,7 @@ class SexCog(commands.Cog):
 
     @commands.command(hidden=True, aliases=['sexwithking'])
     async def sexwithsiggus(self, ctx):
+        if not util.check_ratelimiting(ctx):
+            return
+
         await ctx.send("Sex with Siggus cannot be requested, it just happens <:siggus:758007416553209976>")

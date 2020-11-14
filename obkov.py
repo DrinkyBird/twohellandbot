@@ -190,6 +190,9 @@ class ObkovCog(commands.Cog):
 
     @commands.command(help="Generate a sentence", syntax="rootWord", aliases=["obkov"])
     async def sentence(self, ctx, root_word=None):
+        if not util.check_ratelimiting(ctx):
+            return
+
         message = self.obkov.generate_sentence(root_word)
 
         if message is None and root_word is not None:
@@ -220,6 +223,9 @@ class ObkovCog(commands.Cog):
 
     @commands.command(help="Show stats about the database", aliases=['obkovstats'])
     async def sentencestats(self, ctx):
+        if not util.check_ratelimiting(ctx):
+            return
+
         embed = discord.Embed(title="Stats")
         embed.add_field(name="Root Words", value=f'{len(self.obkov.words):,}')
         embed.add_field(name="Last Generation Duration", value=f'{self.obkov.last_generation_duration * 1000:.3f} ms')
