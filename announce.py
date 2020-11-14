@@ -46,3 +46,22 @@ class AnnouncementsCog(commands.Cog):
             await self.generic_announce(config.BOOST_LEVEL2_MESSAGE, message.author)
         elif message.type == discord.MessageType.premium_guild_tier_3:
             await self.generic_announce(config.BOOST_LEVEL3_MESSAGE, message.author)
+
+    @commands.command(help="Announce a fake announcement", usage="<userid> <patreon|nitro|nitro_tier1|nitro_tier2|nitro_tier3>", hidden=True)
+    async def fakeannounce(self, ctx, user, type):
+        if ctx.author.id in config.ADMINS:
+            target = self.bot.get_user(int(user))
+            if target is None:
+                await ctx.send("Couldn't get User for " + str(user))
+                return
+
+            if type == "patreon":
+                await self.generic_announce(config.WELCOME_MESSAGE, target)
+            elif type == "nitro":
+                await self.generic_announce(config.BOOST_MESSAGE, target)
+            elif type == "nitro_tier1":
+                await self.generic_announce(config.BOOST_LEVEL1_MESSAGE, target)
+            elif type == "nitro_tier2":
+                await self.generic_announce(config.BOOST_LEVEL2_MESSAGE, target)
+            elif type == "nitro_tier3":
+                await self.generic_announce(config.BOOST_LEVEL3_MESSAGE, target)

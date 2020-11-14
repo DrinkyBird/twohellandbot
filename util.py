@@ -52,7 +52,6 @@ def clean_ratelimiting(user):
             newlist.append(t)
 
     rate_data[user] = newlist
-    print(rate_data[user])
 
 def check_ratelimiting(ctx):
     global rate_data
