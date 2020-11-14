@@ -6,6 +6,9 @@ import random
 import json
 import os
 import time
+import asyncio
+
+WAIT_TIME = 100
 
 # Obkov - The sequel to sbkov!
 # It now records word appearance frequencies, and it's named after my new name. Cool.
@@ -195,6 +198,9 @@ class ObkovCog(commands.Cog):
 
         with ctx.typing():
             message = self.obkov.generate_sentence(root_word)
+
+            if self.obkov.last_generation_duration < WAIT_TIME:
+                await asyncio.sleep(WAIT_TIME - self.obkov.last_generation_duration)
 
             if message is None and root_word is not None:
                 await ctx.send(f'I have nothing to say about "{root_word}".')
