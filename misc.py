@@ -108,7 +108,6 @@ class MiscCog(commands.Cog):
 
                 end = time.time()
                 delta = end - start
-                print("delta: " + str(delta))
                 if delta < 0.5:
                     await asyncio.sleep(0.5 - delta)
 
