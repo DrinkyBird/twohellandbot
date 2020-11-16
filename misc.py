@@ -63,6 +63,9 @@ class MiscCog(commands.Cog):
             else:
                 out += c
 
+        if len(out) > 1020:
+            out = out[:1020] + "..."
+
         return out
 
     @commands.command(help="Returns the definition for a word or phrase on the Urban Dictionary", aliases=["ud", "urban"])
@@ -85,13 +88,14 @@ class MiscCog(commands.Cog):
 
             definition = list[0]
             text = self.parse_definition(definition['definition'])
-            if len(text) > 1020:
-                text = text[:1020] + "..."
+            example = self.parse_definition(definition['example'])
 
             timestamp = parser.parse(definition['written_on'])
 
             embed = discord.Embed(title=definition['word'], url=definition['permalink'], timestamp=timestamp, color=self.get_word_colour(definition['defid']))
             embed.add_field(name="Definition", value=text, inline=False)
+            if example:
+                embed.add_field(name="Example", value=example, inline=False)
             embed.add_field(name="Likes", value=f'{definition["thumbs_up"]:,}')
             embed.add_field(name="Dislikes", value=f'{definition["thumbs_down"]:,}')
             embed.set_author(name=definition['author'])
