@@ -103,8 +103,7 @@ class MiscCog(commands.Cog):
                 embed.add_field(name="Definition", value=text, inline=False)
                 if example:
                     embed.add_field(name="Example", value=example, inline=False)
-                embed.set_author(name=definition['author'])
-                embed.set_footer(text=f"Definition #{definition['defid']} • 👍 {definition['thumbs_up']:,} / 👎 {definition['thumbs_down']:,}")
+                embed.set_footer(text=f"Definition #{definition['defid']} • 👍 {definition['thumbs_up']:,} / 👎 {definition['thumbs_down']:,} • Submitted by {definition['author']}")
 
                 end = time.time()
                 delta = end - start
