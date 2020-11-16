@@ -9,6 +9,7 @@ import admin
 import stats
 import sex
 import obkov
+import misc
 
 client = commands.Bot(command_prefix=config.COMMAND_PREFIX)
 client.add_cog(systems.SystemsCog())
@@ -19,6 +20,7 @@ client.add_cog(admin.AdminCog(client))
 client.add_cog(stats.StatsCog(client))
 client.add_cog(sex.SexCog(client))
 client.add_cog(obkov.ObkovCog(client))
+client.add_cog(misc.MiscCog(client))
 
 @client.event
 async def on_command(ctx):
