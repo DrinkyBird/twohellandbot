@@ -4,6 +4,8 @@ import requests
 import urllib.parse
 from dateutil import parser
 import random
+import time
+import asyncio
 
 class MiscCog(commands.Cog):
     def __init__(self, bot):
@@ -76,33 +78,42 @@ class MiscCog(commands.Cog):
             await ctx.send_help(ctx.command)
             return
 
-        phrase = ' '.join(words)
-        url = "https://api.urbandictionary.com/v0/define?term=" + urllib.parse.quote(phrase)
+        async with ctx.typing():
+            start = time.time()
+            phrase = ' '.join(words)
+            url = "https://api.urbandictionary.com/v0/define?term=" + urllib.parse.quote(phrase)
 
-        try:
-            r = requests.get(url)
-            json = r.json()
-            list = json['list']
+            try:
+                r = requests.get(url)
+                json = r.json()
+                list = json['list']
 
-            if len(list) < 1:
-                await ctx.send("No results for `" + phrase + "`")
-                return
+                if len(list) < 1:
+                    await ctx.send("No results for `" + phrase + "`")
+                    return
 
-            definition = list[0]
-            text = self.parse_definition(definition['definition'])
-            example = self.parse_definition(definition['example'])
+                definition = list[0]
+                text = self.parse_definition(definition['definition'])
+                example = self.parse_definition(definition['example'])
 
-            timestamp = parser.parse(definition['written_on'])
+                timestamp = parser.parse(definition['written_on'])
 
-            embed = discord.Embed(title=definition['word'], url=definition['permalink'], timestamp=timestamp, color=self.get_word_colour(definition['defid']))
-            embed.add_field(name="Definition", value=text, inline=False)
-            if example:
-                embed.add_field(name="Example", value=example, inline=False)
-            embed.add_field(name="Likes", value=f'{definition["thumbs_up"]:,}')
-            embed.add_field(name="Dislikes", value=f'{definition["thumbs_down"]:,}')
-            embed.set_author(name=definition['author'])
-            embed.set_footer(text=f"Definition #{definition['defid']}")
+                embed = discord.Embed(title=definition['word'], url=definition['permalink'], timestamp=timestamp,
+                                      color=self.get_word_colour(definition['defid']))
+                embed.add_field(name="Definition", value=text, inline=False)
+                if example:
+                    embed.add_field(name="Example", value=example, inline=False)
+                embed.add_field(name="Likes", value=f'{definition["thumbs_up"]:,}')
+                embed.add_field(name="Dislikes", value=f'{definition["thumbs_down"]:,}')
+                embed.set_author(name=definition['author'])
+                embed.set_footer(text=f"Definition #{definition['defid']}")
 
-            await ctx.send(embed=embed)
-        except Exception as e:
-            await ctx.send("Failed to look up `" + phrase + "`: " + str(e))
+                end = time.time()
+                delta = end - start
+                print("delta: " + str(delta))
+                if delta < 0.5:
+                    await asyncio.sleep(0.5 - delta)
+
+                await ctx.send(embed=embed)
+            except Exception as e:
+                await ctx.send("Failed to look up `" + phrase + "`: " + str(e))
