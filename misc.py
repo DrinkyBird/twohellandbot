@@ -86,11 +86,14 @@ class MiscCog(commands.Cog):
                 return
 
             definition = list[0]
+            text = self.parse_definition(definition['definition'])
+            if len(text) > 1020:
+                text = text[:1020] + "..."
 
             timestamp = parser.parse(definition['written_on'])
 
             embed = discord.Embed(title=definition['word'], url=definition['permalink'], timestamp=timestamp, color=self.get_word_colour(definition['defid']))
-            embed.add_field(name="Definition", value=self.parse_definition(definition['definition']), inline=False)
+            embed.add_field(name="Definition", value=text, inline=False)
             embed.add_field(name="Likes", value=f'{definition["thumbs_up"]:,}')
             embed.add_field(name="Dislikes", value=f'{definition["thumbs_down"]:,}')
             embed.set_author(name=definition['author'])
