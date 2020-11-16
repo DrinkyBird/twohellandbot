@@ -25,6 +25,8 @@ class MiscCog(commands.Cog):
         g = random.randrange(32, 224)
         b = random.randrange(32, 224)
 
+        random.seed() # reseed, prevents gaming !sex
+
         val = (((r & 0xFF) << 16) + ((g & 0xFF) << 8) + (b & 0xFF)) & 0xFFFFFF
         return val
 
