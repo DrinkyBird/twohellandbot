@@ -45,9 +45,7 @@ class MiscCog(commands.Cog):
         linkbuf = ''
         out = ''
 
-        for i in range(len(text)):
-            c = text[i]
-
+        for c in text:
             if c == '[':
                 inlink = True
             elif c == ']':
