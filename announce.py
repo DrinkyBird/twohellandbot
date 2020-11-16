@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import config
 import stats
+import util
 
 def member_had_role(member):
     for role in member.roles:
@@ -25,12 +26,14 @@ class AnnouncementsCog(commands.Cog):
         in_after = member_had_role(after)
 
         if not in_before and in_after:
+            await util.log(self.bot, "announcing welcome for %s (%d) due to member_update" % (after.mention, after.id))
             await self.generic_announce(config.WELCOME_MESSAGE, after)
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
         stats.update_user(member)
         if member_had_role(member):
+            await util.log(self.bot, "announcing welcome for %s (%d) due to member_join" % (member.mention, member.id))
             await self.generic_announce(config.WELCOME_MESSAGE, member)
 
     @commands.Cog.listener()
@@ -39,12 +42,16 @@ class AnnouncementsCog(commands.Cog):
             return
 
         if message.type == discord.MessageType.premium_guild_subscription:
+            await util.log(self.bot, "announcing boost for %s (%d) due to premium_guild_subscription" % (message.author.mention, message.author.id))
             await self.generic_announce(config.BOOST_MESSAGE, message.author)
         elif message.type == discord.MessageType.premium_guild_tier_1:
+            await util.log(self.bot, "announcing boost level 1 for %s (%d) due to premium_guild_tier_1" % (message.author.mention, message.author.id))
             await self.generic_announce(config.BOOST_LEVEL1_MESSAGE, message.author)
         elif message.type == discord.MessageType.premium_guild_tier_2:
+            await util.log(self.bot, "announcing boost level 2 for %s (%d) due to premium_guild_tier_2" % (message.author.mention, message.author.id))
             await self.generic_announce(config.BOOST_LEVEL2_MESSAGE, message.author)
         elif message.type == discord.MessageType.premium_guild_tier_3:
+            await util.log(self.bot, "announcing boost level 3 for %s (%d) due to premium_guild_tier_3" % (message.author.mention, message.author.id))
             await self.generic_announce(config.BOOST_LEVEL3_MESSAGE, message.author)
 
     @commands.command(help="Announce a fake announcement", usage="<userid> <patreon|nitro|nitro_tier1|nitro_tier2|nitro_tier3>", hidden=True)

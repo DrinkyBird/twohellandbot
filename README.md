@@ -46,7 +46,11 @@ WWWDATA_URL = "https://tohellandbot.s3-eu-west-1.amazonaws.com"
 RATELIMIT_PERIOD = 2 * 60
 RATELIMIT_MESSAGES = 4
 
+# Sentence database
 OBKOV_PATH = "C:/Users/DrinkyBird/Dev/twohellandbot/markov.json"
+
+# Logging channel
+LOG_CHANNEL = 563404643657318410
 ```
 
 ## Database schema

@@ -73,3 +73,11 @@ def check_ratelimiting(ctx):
     rate_data[user].append(now)
 
     return True
+
+async def log(bot, value):
+    text = str(value)
+    print(text)
+
+    channel = bot.get_channel(config.LOG_CHANNEL)
+    if channel is not None:
+        await channel.send(text)
