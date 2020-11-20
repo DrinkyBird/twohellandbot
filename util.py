@@ -61,6 +61,9 @@ def check_ratelimiting(ctx):
     if ctx.channel.id == config.SPAM_CHANNEL or user in config.ADMINS:
         return True
 
+    if ctx.channel.id == 688527547113537644:
+        return False
+
     if not user in rate_data:
         rate_data[user] = []
 
