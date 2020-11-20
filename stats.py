@@ -46,6 +46,9 @@ class StatsCog(commands.Cog):
 
     @commands.command(help="Shows bot statistics")
     async def stats(self, ctx):
+        if not util.check_ratelimiting(ctx):
+            return
+            
         process = psutil.Process(os.getpid())
         uptime = time.time() - start_time
 
