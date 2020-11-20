@@ -74,6 +74,9 @@ class MiscCog(commands.Cog):
 
     @commands.command(help="Returns the definition for a word or phrase on the Urban Dictionary", aliases=["ud", "urban"])
     async def urbandictionary(self, ctx, *words):
+        if not util.check_ratelimiting(ctx):
+            return
+            
         if len(words) < 1:
             await ctx.send_help(ctx.command)
             return
