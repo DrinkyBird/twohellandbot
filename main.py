@@ -11,8 +11,11 @@ import sex
 import obkov
 import misc
 
-client = commands.Bot(command_prefix=config.COMMAND_PREFIX)
 client.add_cog(systems.SystemsCog())
+intents = discord.Intents.default()
+intents.members = True
+
+client = commands.Bot(command_prefix=config.COMMAND_PREFIX, intents=intents)
 client.add_cog(quotes.QuotesCog(client))
 client.add_cog(identicon.IdenticonCog())
 client.add_cog(announce.AnnouncementsCog(client))
