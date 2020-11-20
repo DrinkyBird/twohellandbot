@@ -6,6 +6,7 @@ from dateutil import parser
 import random
 import time
 import asyncio
+import util
 
 class MiscCog(commands.Cog):
     def __init__(self, bot):
