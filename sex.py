@@ -212,7 +212,7 @@ class SexCog(commands.Cog):
             ctx.author.name + "#" + str(ctx.author.discriminator), f'{count:,}')
             emoji = random.choice(APPEND_EMOJIS)
 
-            await ctx.send("%s %s %s" % (msg, sexcount, emoji))
+            await ctx.reply("%s %s %s" % (msg, sexcount, emoji))
 
     @commands.command(help="Lists the most desperate people")
     async def sexleaderboards(self, ctx):
@@ -302,9 +302,9 @@ class SexCog(commands.Cog):
             return
 
         if ctx.author.id == 195246948847058954:
-            await ctx.send("No selfcest allowed")
+            await ctx.reply("No selfcest allowed")
         else:
-            await ctx.send("If you're really desperate for sex, pester <@264844361341075467> about the spam channel. Also, this attempt has been reported to the police.")
+            await ctx.reply("If you're really desperate for sex, pester <@264844361341075467> about the spam channel. Also, this attempt has been reported to the police.")
 
     @commands.command(hidden=True)
     async def sexwithtravis(self, ctx):
@@ -312,13 +312,13 @@ class SexCog(commands.Cog):
             return
 
         if ctx.author.id == 190318086132465664:
-            await ctx.send("No selfcest allowed")
+            await ctx.reply("No selfcest allowed")
         else:
-            await ctx.send("Sorry, Travis <:TalksToBoards:769303261667917864> only has sex with (male) boards <:TravisGf:769302530467037215>.")
+            await ctx.reply("Sorry, Travis <:TalksToBoards:769303261667917864> only has sex with (male) boards <:TravisGf:769302530467037215>.")
 
     @commands.command(hidden=True, aliases=['sexwithking'])
     async def sexwithsiggus(self, ctx):
         if not util.check_ratelimiting(ctx):
             return
 
-        await ctx.send("Sex with Siggus cannot be requested, it just happens <:siggus:758007416553209976>")
+        await ctx.reply("Sex with Siggus cannot be requested, it just happens <:siggus:758007416553209976>")

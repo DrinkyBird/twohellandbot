@@ -63,21 +63,21 @@ class QuotesCog(commands.Cog):
         if not util.check_ratelimiting(ctx):
             return
 
-        await ctx.send("Please use the website to add quotes: <http://bot.montclairpublicaccess.info/quotes.php>")
+        await ctx.reply("Please use the website to add quotes: <http://bot.montclairpublicaccess.info/quotes.php>")
 
     @commands.command(hidden=True)
     async def delquote(self, ctx):
         if not util.check_ratelimiting(ctx):
             return
 
-        await ctx.send("Please use the website to delete quotes: <http://bot.montclairpublicaccess.info/quotes.php>")
+        await ctx.reply("Please use the website to delete quotes: <http://bot.montclairpublicaccess.info/quotes.php>")
 
     @commands.command(hidden=True)
     async def editquote(self, ctx):
         if not util.check_ratelimiting(ctx):
             return
 
-        await ctx.send("Please use the website to edit quotes: <http://bot.montclairpublicaccess.info/quotes.php>")
+        await ctx.reply("Please use the website to edit quotes: <http://bot.montclairpublicaccess.info/quotes.php>")
 
     @commands.command(help="Shows statistics about the quote database")
     async def quotestats(self, ctx):

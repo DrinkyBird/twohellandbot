@@ -93,7 +93,7 @@ class MiscCog(commands.Cog):
                 list = json['list']
 
                 if len(list) < 1:
-                    await ctx.send("No results for `" + phrase + "`")
+                    await ctx.reply("No results for `" + phrase + "`")
                     return
 
                 definition = list[0]
@@ -114,6 +114,6 @@ class MiscCog(commands.Cog):
                 if delta < 0.5:
                     await asyncio.sleep(0.5 - delta)
 
-                await ctx.send(embed=embed)
+                await ctx.reply(embed=embed)
             except Exception as e:
-                await ctx.send("Failed to look up `" + phrase + "`: " + str(e))
+                await ctx.reply("Failed to look up `" + phrase + "`: " + str(e))

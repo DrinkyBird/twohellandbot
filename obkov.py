@@ -203,7 +203,7 @@ class ObkovCog(commands.Cog):
                 await asyncio.sleep((WAIT_TIME - self.obkov.last_generation_duration) / 1000)
 
             if message is None and root_word is not None:
-                await ctx.send(f'I have nothing to say about "{root_word}".')
+                await ctx.reply(f'I have nothing to say about "{root_word}".')
                 return
 
             if message:
@@ -211,7 +211,7 @@ class ObkovCog(commands.Cog):
                     message = message[:1950]
                     message += "..."
 
-                await ctx.send(message)
+                await ctx.reply(message)
 
     @commands.command(help="Train from a file", hidden=True)
     async def trainfile(self, ctx, path):
@@ -226,7 +226,7 @@ class ObkovCog(commands.Cog):
 
                 self.obkov.save(config.MARKOV_PATH)
 
-                await ctx.send(f'Trained on {len(words)} words')
+                await ctx.reply(f'Trained on {len(words)} words')
 
     @commands.command(help="Show stats about the database", aliases=['obkovstats'])
     async def sentencestats(self, ctx):
