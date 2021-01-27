@@ -42,7 +42,7 @@ class QuotesCog(commands.Cog):
             row = cur.fetchone()
 
             if row is None:
-                await ctx.send('There is no quote with ID ' + str(id))
+                await ctx.reply('There is no quote with ID ' + str(id))
             else:
                 user = self.bot.get_user(int(row["submitter"]))
                 username = row["submitter_name"]
@@ -56,7 +56,7 @@ class QuotesCog(commands.Cog):
                 embed.set_author(name=speaker["name"], icon_url=speaker["picture_url"],
                                  url="http://bot.montclairpublicaccess.info/quotes.php")
                 embed.set_footer(text="Submitted by " + username)
-                await ctx.send(embed=embed)
+                await ctx.reply(embed=embed)
 
     @commands.command(hidden=True)
     async def addquote(self, ctx):
