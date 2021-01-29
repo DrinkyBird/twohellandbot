@@ -31,6 +31,7 @@ class AdminCog(commands.Cog):
     @commands.command(help="Kills the bot", hidden=True)
     async def exit(self, ctx):
         if ctx.author.id in config.ADMINS:
+            await ctx.reply("A BOT IS DEAD", mention_author=False)
             await self.bot.close()
             sys.exit()
 
