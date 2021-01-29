@@ -61,15 +61,12 @@ def check_ratelimiting(ctx):
     if ctx.channel.id == config.SPAM_CHANNEL or user in config.ADMINS:
         return True
 
-    if ctx.channel.id == 688527547113537644:
-        return False
-
-    if not user in rate_data:
+    if user not in rate_data:
         rate_data[user] = []
 
     clean_ratelimiting(user)
 
-    if len(rate_data[user]) > config.RATELIMIT_MESSAGES:
+    if len(rate_data[user]) >= config.RATELIMIT_MESSAGES:
         return False
 
     now = int(time.time())
