@@ -22,15 +22,12 @@ class IdenticonCog(commands.Cog):
 
     @commands.command(help="Generates an identicon for a string", usage="[string]")
     async def identicon(self, ctx, *, args=None):
-        if args is None:
-            args = []
-
         if not util.check_ratelimiting(ctx):
             return
 
         name = ctx.author.name
-        if len(args) > 0:
-            name = ' '.join(args)
+        if args is not None:
+            name = args
 
         hash = hashlib.sha256(name.encode()).hexdigest()
 
