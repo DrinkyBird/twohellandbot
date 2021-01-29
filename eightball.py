@@ -5,7 +5,6 @@ import re
 
 EIGHTBALL_PREFIX = [
     ":white_check_mark: ",
-    ":thinking: ",
     ":x: "
 ]
 
@@ -20,14 +19,6 @@ EIGHTBALL_RESPONSES = [
         "Most likely.",
         "Yes.",
         "Signs point to yes.",
-    ],
-
-    [
-        "Reply hazy, try again.",
-        "Ask again later.",
-        "Better not tell you now.",
-        "Cannot predict now.",
-        "Concentrate and ask again.",
     ],
 
     [
