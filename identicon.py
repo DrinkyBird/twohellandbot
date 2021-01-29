@@ -21,7 +21,10 @@ class IdenticonCog(commands.Cog):
         self.generator = pydenticon.Generator(5, 5, foreground=foreground, background=background)
 
     @commands.command(help="Generates an identicon for a string", usage="[string]")
-    async def identicon(self, ctx, *args):
+    async def identicon(self, ctx, *, args=None):
+        if args is None:
+            args = []
+
         if not util.check_ratelimiting(ctx):
             return
 

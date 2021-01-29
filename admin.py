@@ -15,7 +15,10 @@ class AdminCog(commands.Cog):
         self.bot = bot
 
     @commands.command(help="Speaks a thing", usage="<text>", hidden=True)
-    async def say(self, ctx, target, *args):
+    async def say(self, ctx, target, *, args=None):
+        if args is None:
+            args = []
+
         if ctx.author.id in config.ADMINS:
             if len(args) < 1:
                 await ctx.send('<@%d> Syntax: `%ssay <channel ID> <text>`' % (ctx.author.id, config.COMMAND_PREFIX))
@@ -51,7 +54,10 @@ class AdminCog(commands.Cog):
             await ctx.send("Before: {:.3f} MB; After: {:.3f} MB".format(before / 1024 / 1024, after / 1024 / 1024))
 
     @commands.command(help="Execute an SQLite query", usage="<query>", hidden=True)
-    async def sql(self, ctx, *args):
+    async def sql(self, ctx, *, args=None):
+        if args is None:
+            args = []
+
         if ctx.author.id in config.ADMINS:
             if len(args) < 1:
                 await ctx.send('<@%d> Syntax: `%ssql <SQLite query>`' % (ctx.author.id, config.COMMAND_PREFIX))
@@ -128,7 +134,10 @@ class AdminCog(commands.Cog):
             print(val)
 
     @commands.command(help="Set bot nickname", hidden=True)
-    async def nickname(self, ctx, *args):
+    async def nickname(self, ctx, *, args=None):
+        if args is None:
+            args = []
+
         if ctx.author.id in config.ADMINS:
             member = ctx.message.guild.get_member(self.bot.user.id)
             await member.edit(nick=' '.join(args))

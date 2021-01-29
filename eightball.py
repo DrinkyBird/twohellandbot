@@ -31,7 +31,10 @@ EIGHTBALL_RESPONSES = [
 ]
 class EightBallCog(commands.Cog):
     @commands.command(help="Ask the Magic 8-Ball a question", aliases=["8ball"])
-    async def eightball(self, ctx, *words):
+    async def eightball(self, ctx, *, words=None):
+        if words is None:
+            words = []
+
         if len(words) < 1:
             await ctx.reply('You need to ask me a question.')
             return
