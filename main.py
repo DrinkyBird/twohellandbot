@@ -10,6 +10,8 @@ import stats
 import sex
 import obkov
 import misc
+import ud
+import eightball
 
 intents = discord.Intents.default()
 intents.members = True
@@ -24,6 +26,8 @@ client.add_cog(stats.StatsCog(client))
 client.add_cog(sex.SexCog(client))
 client.add_cog(obkov.ObkovCog(client))
 client.add_cog(misc.MiscCog(client))
+client.add_cog(ud.UdCog(client))
+client.add_cog(eightball.EightBallCog())
 
 @client.event
 async def on_command(ctx):
