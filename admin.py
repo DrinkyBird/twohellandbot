@@ -8,6 +8,7 @@ import os
 import psutil
 import gc
 from guppy import hpy
+import asyncio
 
 class AdminCog(commands.Cog):
     def __init__(self, bot):
@@ -32,6 +33,7 @@ class AdminCog(commands.Cog):
     async def exit(self, ctx):
         if ctx.author.id in config.ADMINS:
             await ctx.reply("A BOT IS DEAD", mention_author=False)
+            await asyncio.sleep(1)
             await self.bot.close()
             sys.exit()
 
