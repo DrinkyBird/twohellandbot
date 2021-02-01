@@ -16,7 +16,6 @@ class MiscCog(commands.Cog):
     @commands.command(hidden=True)
     async def blachool(self, ctx):
         response = random.choice(BLACHOOL_RESPONSES)
-        print(str(response))
 
         for emoji in response:
             e = emoji
