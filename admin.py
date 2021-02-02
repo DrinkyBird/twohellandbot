@@ -9,6 +9,7 @@ import psutil
 import gc
 from guppy import hpy
 import asyncio
+import subprocess
 
 class AdminCog(commands.Cog):
     def __init__(self, bot):
@@ -107,8 +108,13 @@ class AdminCog(commands.Cog):
     @commands.command(hidden=True)
     async def ver(self, ctx):
         s = ''
-        s += 'Python: `%s`\n' % (sys.version)
-        s += 'discord.py: `%s`\n' % (discord.__version__)
+        s += 'Python: `%s`\n' % (sys.version,)
+        s += 'discord.py: `%s`\n' % (discord.__version__,)
+        s += 'Commit: `%s`' % (subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode(),)
+        s += 'cwd: `%s`\n' % (os.getcwd(),)
+        s += 'Dir: `%s`\n' % (os.path.dirname(os.path.realpath(__file__)),)
+        s += 'S3 Dir: `%s`\n' % (config.WWWDATA_PATH,)
+        s += 'S3 URL: `%s`\n' % (config.WWWDATA_URL,)
 
         if hasattr(os, 'uname'):
             s += 'uname: `%s`\n' % (str(os.uname()))
