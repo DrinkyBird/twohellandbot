@@ -140,6 +140,16 @@ class AdminCog(commands.Cog):
             except:
                 print("Couldn't delete !nickname message")
 
+    @commands.command(hidden=True)
+    async def delmsg(self, ctx, cid, mid):
+        if ctx.author.id in config.ADMINS:
+            chan = await self.bot.fetch_channel(cid)
+            msg = await chan.fetch_message(mid)
+            if msg is None:
+                ctx.reply('msg is `None`')
+            else:
+                await msg.delete()
+
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.channel.id == 770727540691959819:
