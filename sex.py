@@ -10,7 +10,7 @@ class SexCog(commands.Cog):
         if not util.check_ratelimiting(ctx):
             return
 
-        ctx.reply(random.choice([
+        await ctx.reply(random.choice([
             "Abstinence is good for the soul",
             "Pre-marital sex is a sin.",
             "No.",
