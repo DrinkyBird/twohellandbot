@@ -77,7 +77,7 @@ class GoogleBooksCog(commands.Cog):
                     text = volumeInfo['description']
                     if len(text) > 500:
                         text = text[:500] + '...'
-                    embed.add_field(name='Description', value=volumeInfo['description'], inline=False)
+                    embed.add_field(name='Description', value=text, inline=False)
 
                 await ctx.reply(f'Your query returned {totalItems} result{"" if totalItems == 1 else "s"}.', embed=embed)
         except Exception as e:
