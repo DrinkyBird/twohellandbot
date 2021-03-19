@@ -12,6 +12,7 @@ import obkov
 import misc
 import ud
 import eightball
+import gbooks
 
 intents = discord.Intents.default()
 intents.members = True
@@ -28,6 +29,7 @@ client.add_cog(obkov.ObkovCog(client))
 client.add_cog(misc.MiscCog(client))
 client.add_cog(ud.UdCog(client))
 client.add_cog(eightball.EightBallCog())
+client.add_cog(gbooks.GoogleBooksCog(client))
 
 @client.event
 async def on_command(ctx):
