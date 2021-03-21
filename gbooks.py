@@ -30,7 +30,7 @@ class GoogleBooksCog(commands.Cog):
                 '`isbn:9780943151168` - search by ISBN, similarly `lccn:` and `oclc:` are supported\n'
                 '`intitle:JTHM` - search by title\n'
                 '`inauthor:"Jhonen Vasquez"` - search by author\n'
-                '`inpublisher:SLG` - search by author\n\n'
+                '`inpublisher:SLG` - search by publisher\n\n'
                 'See also: <https://developers.google.com/books/docs/v1/using#PerformingSearch>'
                 % (config.COMMAND_PREFIX))
             return
