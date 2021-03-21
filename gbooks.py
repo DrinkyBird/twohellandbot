@@ -23,7 +23,16 @@ class GoogleBooksCog(commands.Cog):
     @commands.command(help="Returns the first result for a search on Google Books", aliases=["gbooks", "books", "book"])
     async def googlebooks(self, ctx, *, query=None):
         if not query:
-            await ctx.reply('Syntax: `%googlebooks <query>`' % (config.COMMAND_PREFIX))
+            await ctx.reply(
+                '**Syntax: `%sgooglebooks <query>`**\n'
+                'This command returns the top result for the given search query on Google Books.\n\n'
+                'You can use certain keywords in your query, e.g.:\n'
+                '`isbn:9780943151168` - search by ISBN, similarly `lccn:` and `oclc:` are supported\n'
+                '`intitle:JTHM` - search by title\n'
+                '`inauthor:"Jhonen Vasquez"` - search by author\n'
+                '`inpublisher:SLG` - search by author\n\n'
+                'See also: <https://developers.google.com/books/docs/v1/using#PerformingSearch>'
+                % (config.COMMAND_PREFIX))
             return
 
         url = 'https://www.googleapis.com/books/v1/volumes?q=' + urllib.parse.quote(query)
