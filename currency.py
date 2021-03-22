@@ -6,6 +6,8 @@ import db
 import config
 import time
 import math
+import datetime
+import re
 
 EMOJI_VALUES = {
     817927111884144670: 1,
@@ -234,6 +236,42 @@ class CurrencyCog(commands.Cog):
         msg = f"You are currently position {self.get_user_rank(ctx.author.id, True)} on the leaderboard."
 
         await ctx.send(msg, embed=embed)
+
+    @commands.command(help="View your bank statement")
+    async def statement(self, ctx):
+        cur = db.get_cursor()
+        db.execute(cur, "SELECT * FROM `currency_ledger` WHERE `from`=? OR `to`=?", (ctx.author.id, ctx.author.id))
+        rows = cur.fetchall()
+
+        if len(rows) < 1:
+            await ctx.reply("Your bank statement is empty.")
+        else:
+            s = 'Here are your most recent transactions:\n'
+
+            i = 0
+            linkregex = re.compile(r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))")
+            for row in rows:
+                amount = row["amount"]
+                from_id = int(row["from"])
+                to_id = int(row["to"])
+                note = row["note"]
+                timestamp = row["timestamp"]
+                sts = datetime.datetime.utcfromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S %Z')
+
+                fromuser = self.bot.get_user(from_id)
+                touser = self.bot.get_user(to_id)
+
+                s += f"**{sts} - {amount} VeggieBooks - from {fromuser.mention} to {touser.mention}**\n"
+                if not note:
+                    s += "*No note*\n"
+                else:
+                    s += "> " + linkregex.sub(r"<\1>", note) + "\n"
+
+                i += 1
+                if i >= 10:
+                    break
+
+            await ctx.send(s, allowed_mentions=discord.AllowedMentions.none())
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
