@@ -121,6 +121,56 @@ class AdminCog(commands.Cog):
 
         await ctx.send(s)
 
+    @commands.command(hidden=True)
+    async def botinfo(self, ctx):
+        if not ctx.author.id in config.ADMINS:
+            return
+
+        intent_names = []
+        for intent in self.bot.intents:
+            if intent[1]:
+                intent_names.append(f'`{intent[0]}`')
+
+        application = await self.bot.application_info()
+        s = '__**Bot Information**__\n'
+        s += f'**Application ID:** `{application.id}`\n'
+        s += f'**Application Name:** {application.name}\n'
+        s += f'**Application Owner:** {application.owner.mention}\n'
+        s += f'**Application Icon:** <{application.icon_url}>\n'
+        s += f'**Application Public Bot:** {application.bot_public}\n'
+        s += f'**Application Bot Requires Code Grant:** {application.bot_require_code_grant}\n'
+        s += f'**Intents:** {", ".join(intent_names)}\n'
+        s += f'**Latency:** {self.bot.latency}\n'
+        s += f'**User ID:** `{self.bot.user.id}`\n'
+        s += f'**User Name:** {self.bot.user.name}#{self.bot.user.discriminator}\n'
+        s += f'**User Avatar:** <{self.bot.user.avatar_url}>\n'
+        s += f'**User Locale:** {self.bot.user.locale}\n'
+
+        await ctx.send(s)
+
+        for guild in self.bot.guilds:
+            member = guild.get_member(self.bot.user.id)
+
+            channel_names = []
+            for channel in guild.channels:
+                myperms = channel.permissions_for(member)
+                if channel.type == discord.ChannelType.text and myperms.read_messages:
+                    channel_names.append(f'#{channel.name}')
+
+            perm_names = []
+            for perm in member.guild_permissions:
+                if perm[1]:
+                    perm_names.append(f'`{perm[0]}`')
+
+            s = ''
+            s += f'__**Guild {guild.id}: `{guild.name}`**__\n'
+            s += f'**{len(channel_names)} channels:** {", ".join(channel_names)}\n'
+            s += f'**{len(guild.members)} members**\n'
+            s += f'**Display Name:** {member.display_name}\n'
+            s += f'**Guild permissions:** {", ".join(perm_names)}\n'
+
+            await ctx.send(s)
+
     @commands.command(help="Show heap analysis", hidden=True)
     async def heap(self, ctx):
         if ctx.author.id in config.ADMINS:
