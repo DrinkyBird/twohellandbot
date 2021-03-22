@@ -14,9 +14,11 @@ import ud
 import eightball
 import gbooks
 import voteban
+import currency
 
 intents = discord.Intents.default()
 intents.members = True
+intents.reactions = True
 
 client = commands.Bot(command_prefix=config.COMMAND_PREFIX, intents=intents)
 client.add_cog(quotes.QuotesCog(client))
@@ -32,6 +34,7 @@ client.add_cog(ud.UdCog(client))
 client.add_cog(eightball.EightBallCog())
 client.add_cog(gbooks.GoogleBooksCog(client))
 client.add_cog(voteban.VoteBanCog(client))
+client.add_cog(currency.CurrencyCog(client))
 
 @client.event
 async def on_command(ctx):

@@ -92,4 +92,24 @@ CREATE TABLE "bans" (
     "time" INTEGER,
     PRIMARY KEY("user")
 );
+
+CREATE TABLE IF NOT EXISTS "currency_balances" (
+        "user"  TEXT,
+        "balance"       INTEGER,
+        PRIMARY KEY("user")
+);
+CREATE TABLE IF NOT EXISTS "currency_ledger" (
+        "id"    INTEGER,
+        "from"  TEXT,
+        "to"    TEXT,
+        "amount"        INTEGER,
+        "timestamp"     INTEGER,
+        "note"  TEXT,
+        PRIMARY KEY("id" AUTOINCREMENT)
+);
+CREATE TABLE IF NOT EXISTS "currency_daily" (
+        "user"  TEXT,
+        "last_claimed"  INTEGER,
+        PRIMARY KEY("user")
+);
 ```

@@ -35,7 +35,7 @@ class AnnouncementsCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if message.guild.id != config.ANNOUNCE_SERVER:
+        if message.guild is not None and message.guild.id != config.ANNOUNCE_SERVER:
             return
 
         if message.type == discord.MessageType.premium_guild_subscription:
