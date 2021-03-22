@@ -158,6 +158,72 @@ class CurrencyCog(commands.Cog):
 
         await self.transfer_money(self.bot.user.id, destuser.id, intamount, "", True)
 
+    def get_user_rank(self, id, descending):
+        if not self.user_signed_up(id):
+            return -1
+
+        cur = db.get_cursor()
+
+        cmd = "SELECT COUNT(*) FROM currency_balances WHERE CAST(balance AS INTEGER)"
+        cmd = cmd + (">" if descending else "<")
+        cmd = cmd + "(SELECT CAST(balance AS INTEGER) FROM currency_balances WHERE user=?)"
+        db.execute(cur, cmd, (id,))
+        row = cur.fetchone()
+
+        if row is None:
+            return -1
+
+        return row[0] + 1
+
+    @commands.command(aliases=["leaderboard"])
+    async def leaderboards(self, ctx):
+        MAX_USERS = 10
+
+        cur = db.get_cursor()
+        db.execute(cur, "SELECT * FROM currency_balances")
+        rows = cur.fetchall()
+
+        countmap = {}
+        total = 0
+
+        for row in rows:
+            user = int(row["user"])
+            countmap[user] = row["balance"]
+
+            if user != self.bot.user.id:
+                total += row["balance"]
+
+        sort = sorted(countmap, key=countmap.get, reverse=True)
+
+        embed = discord.Embed(name="VeggieBuck Leaderboards", color=discord.Colour.green())
+        embed.set_author(name="Montclair Community Bank")
+        embed.set_footer(text=f'{total:,} VeggieBucks exist')
+
+        topuser = self.bot.get_user(sort[0])
+        if topuser is not None:
+            embed.set_thumbnail(url=topuser.avatar_url)
+
+        i = 0
+        for user in sort:
+            value = countmap[user]
+            pos = self.get_user_rank(user, True)
+
+            discorduser = self.bot.get_user(user)
+            username = f"Unknown user {user}"
+            if discorduser is not None:
+                username = f"{discorduser.name}#{discorduser.discriminator}"
+
+            embed.add_field(name=f"{pos}. {username}", value=f"{value:,}", inline=True)
+
+            i += 1
+            if i >= MAX_USERS:
+                break
+
+        msg = f"You are currently position {self.get_user_rank(ctx.author.id, True)} on the leaderboard."
+
+        await ctx.send(msg, embed=embed)
+
+
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
         guild = self.bot.get_guild(payload.guild_id)
