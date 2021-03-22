@@ -272,7 +272,7 @@ class CurrencyCog(commands.Cog):
                 if i >= 10:
                     break
 
-            await ctx.send(s, allowed_mentions=discord.AllowedMentions.none())
+            await ctx.reply(s, allowed_mentions=discord.AllowedMentions.none())
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
