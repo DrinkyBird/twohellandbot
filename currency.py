@@ -99,7 +99,8 @@ class CurrencyCog(commands.Cog):
         await self.create_account(ctx.author.id)
 
         balance = self.get_user_balance(ctx.author.id)
-        await ctx.reply(f'Your balance is currently {balance:,} VeggieBucks.')
+        bonus = self.get_daily_bonus(ctx.author)
+        await ctx.reply(f'Your balance is currently {balance:,} VeggieBucks. Your daily chatting bonus is {bonus:,}.')
 
     @commands.command()
     async def transfer(self, ctx, destination, amount, *, note=""):
@@ -157,6 +158,14 @@ class CurrencyCog(commands.Cog):
 
         await self.transfer_money(from_user.id, to_user.id, EMOJI_VALUES[emoji.id], f"{msg.jump_url}")
 
+    def get_daily_bonus(self, member):
+        for role in member.roles:
+            for roleid, amount in config.CURRENCY_DAILY_BONUSES:
+                if role.id == roleid:
+                    return amount
+
+        return config.CURRENCY_DAILY_BONUS_DEFAULT
+
     @commands.Cog.listener()
     async def on_message(self, message):
         dest = message.author
@@ -167,7 +176,7 @@ class CurrencyCog(commands.Cog):
 
         if row is None:
             print(f'Giving first daily chat bonus to {dest.id}')
-            await self.transfer_money(self.bot.user.id, dest.id, config.CURRENCY_DAILY_BONUS, "Daily chatting bonus (initial)", True)
+            await self.transfer_money(self.bot.user.id, dest.id, self.get_daily_bonus(message.author), "Daily chatting bonus (initial)", True)
             db.execute(cur, "INSERT INTO `currency_daily` (user, last_claimed) VALUES (?, ?)",
                        (str(dest.id), time.time()))
             db.commit()
@@ -178,7 +187,7 @@ class CurrencyCog(commands.Cog):
 
             if nowmod > lastmod:
                 print(f'Giving daily chat bonus to {dest.id} as {nowmod} > {lastmod}')
-                await self.transfer_money(self.bot.user.id, dest.id, config.CURRENCY_DAILY_BONUS,
+                await self.transfer_money(self.bot.user.id, dest.id, self.get_daily_bonus(message.author),
                                           "Daily chatting bonus", True)
                 db.execute(cur, "UPDATE `currency_daily` SET `last_claimed`=? WHERE `user`=?",
                            (now, str(dest.id)))
