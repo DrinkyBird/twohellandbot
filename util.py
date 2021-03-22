@@ -12,17 +12,13 @@ def argument_to_id(arg):
     if is_integer(arg):
         return int(arg)
 
-    # attempt to parse mention tag
-    if len(arg) == 21:
-        if arg[:2] == '<@' and arg[-1:] == '>':
-            id = arg[2:-1]
-            if is_integer(id):
-                return int(id)
-    if len(arg) == 22:
-        if arg[:3] == '<@!' and arg[-1:] == '>':
-            id = arg[3:-1]
-            if is_integer(id):
-                return int(id)
+    if (arg[:2] == '<@' or arg[:3] == '<@!') and arg[-1:] == '>':
+        off = 2
+        if arg[:3] == '<@!':
+            off = 3
+        id = arg[off:-1]
+        if is_integer(id):
+            return int(id)
 
     return None
 
