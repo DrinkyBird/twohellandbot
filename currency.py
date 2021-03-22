@@ -166,11 +166,13 @@ class CurrencyCog(commands.Cog):
         row = cur.fetchone()
 
         if row is None:
-            await self.transfer_money(self.bot.user.id, dest.id, config.CURRENCY_DAILY_BONUS, "Daily chatting bonus", True)
+            print(f'Giving first daily chat bonus to {dest.id}')
+            await self.transfer_money(self.bot.user.id, dest.id, config.CURRENCY_DAILY_BONUS, "Daily chatting bonus (initial)", True)
             db.execute(cur, "INSERT INTO `currency_daily` (user, last_claimed) VALUES (?, ?)",
                        (str(dest.id), time.time()))
             db.commit()
         else:
+            print(f'Giving daily chat bonus to {dest.id}')
             now = time.time()
             lastmod = math.floor(row[1]) % 86400
             nowmod = math.floor(now) % 86400
