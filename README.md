@@ -84,5 +84,12 @@ CREATE TABLE "sex_totals" (
 	"user"	TEXT,
 	"total"	INTEGER,
 	PRIMARY KEY("user")
-)
+);
+
+CREATE TABLE "bans" (
+    "user" TEXT,
+    "guild" TEXT,
+    "time" INTEGER,
+    PRIMARY KEY("user")
+);
 ```

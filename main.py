@@ -13,6 +13,7 @@ import misc
 import ud
 import eightball
 import gbooks
+import voteban
 
 intents = discord.Intents.default()
 intents.members = True
@@ -30,6 +31,7 @@ client.add_cog(misc.MiscCog(client))
 client.add_cog(ud.UdCog(client))
 client.add_cog(eightball.EightBallCog())
 client.add_cog(gbooks.GoogleBooksCog(client))
+client.add_cog(voteban.VoteBanCog(client))
 
 @client.event
 async def on_command(ctx):
