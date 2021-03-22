@@ -16,6 +16,8 @@ EMOJI_VALUES = {
     823664581373067274: 100
 }
 
+# DELETE FROM currency_balances; DELETE FROM currency_ledger; DELETE FROM currency_daily;
+
 class CurrencyCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -58,11 +60,13 @@ class CurrencyCog(commands.Cog):
 
     async def transfer_money(self, from_uid, to_uid, amount, note="", silent=False):
         if from_uid == to_uid:
+            print(f'Transfer {from_uid} -> {to_uid} failed as same user')
             return False
 
         source_user = self.bot.get_user(from_uid)
         dest_user = self.bot.get_user(to_uid)
         if source_user is None or dest_user is None:
+            print(f'Transfer {from_uid} ({source_user}) -> {to_uid} ({to_uid}) failed as one of them was None')
             return False
 
         await self.create_account(from_uid)
@@ -72,6 +76,7 @@ class CurrencyCog(commands.Cog):
             if not silent:
                 balance = self.get_user_balance(from_uid)
                 await source_user.send(f'You do not have sufficient VeggieBucks to do this. Your current balance is: {balance:,}')
+            print(f'Transfer {from_uid} ({source_user}) -> {to_uid} ({to_uid}) failed as source has insufficient balance')
             return False
 
         cur = db.get_cursor()
@@ -118,7 +123,7 @@ class CurrencyCog(commands.Cog):
 
     @commands.command(hidden=True)
     async def give(self, ctx, destination, amount):
-        if not ctx.author.id in config.ADMINS:
+        if ctx.author.id not in config.ADMINS:
             return
 
         destid = util.argument_to_id(destination)
@@ -166,12 +171,13 @@ class CurrencyCog(commands.Cog):
                        (str(dest.id), time.time()))
             db.commit()
         else:
-            lastmod = row[1] % 86400
-            nowmod = math.floor(time.time()) % 86400
+            now = time.time()
+            lastmod = math.floor(row[1]) % 86400
+            nowmod = math.floor(now) % 86400
 
             if nowmod > lastmod:
                 await self.transfer_money(self.bot.user.id, dest.id, config.CURRENCY_DAILY_BONUS,
                                           "Daily chatting bonus", True)
                 db.execute(cur, "UPDATE `currency_daily` SET `last_claimed`=? WHERE `user`=?",
-                           (time.time(), str(dest.id)))
+                           (now, str(dest.id)))
                 db.commit()
