@@ -94,13 +94,31 @@ class CurrencyCog(commands.Cog):
 
         return True
 
+    def get_user_rank(self, id, descending):
+        if not self.user_signed_up(id):
+            return -1
+
+        cur = db.get_cursor()
+
+        cmd = "SELECT COUNT(*) FROM currency_balances WHERE CAST(balance AS INTEGER)"
+        cmd = cmd + (">" if descending else "<")
+        cmd = cmd + "(SELECT CAST(balance AS INTEGER) FROM currency_balances WHERE user=?)"
+        db.execute(cur, cmd, (id,))
+        row = cur.fetchone()
+
+        if row is None:
+            return -1
+
+        return row[0] + 1
+
     @commands.command(help="View your VeggieBucks balance")
     async def balance(self, ctx):
         await self.create_account(ctx.author.id)
 
         balance = self.get_user_balance(ctx.author.id)
         bonus = self.get_daily_bonus(ctx.author)
-        await ctx.reply(f'Your balance is currently {balance:,} VeggieBucks. Your daily chatting bonus is {bonus:,}.')
+        rank = self.get_user_rank(ctx.author.id, True)
+        await ctx.reply(f'Your balance is currently {balance:,} VeggieBucks. Your daily chatting bonus is {bonus:,}. You are currently position {rank} on the leaderboard.')
 
     @commands.command(hidden=True)
     async def fbalance(self, ctx, user):
@@ -141,14 +159,20 @@ class CurrencyCog(commands.Cog):
             await ctx.reply(f'The transfer failed. Make sure you have enough VeggieBucks (your current balance is {balance:,})')
 
     @commands.command(hidden=True)
-    async def give(self, ctx, destination, amount):
+    async def ftransfer(self, ctx, source, destination, amount, *, note=""):
         if ctx.author.id not in config.ADMINS:
+            return
+
+        srcid = util.argument_to_id(source)
+        srcuser = self.bot.get_user(srcid)
+        if srcuser is None:
+            await ctx.reply("Source user doesn't exist!")
             return
 
         destid = util.argument_to_id(destination)
         destuser = self.bot.get_user(destid)
         if destuser is None:
-            await ctx.reply("That user doesn't exist!")
+            await ctx.reply("Dest user doesn't exist!")
             return
 
         intamount = int(amount)
@@ -156,26 +180,14 @@ class CurrencyCog(commands.Cog):
             await ctx.reply("You must transfer at least 1 VeggieBuck!")
             return
 
-        await self.transfer_money(self.bot.user.id, destuser.id, intamount, "", True)
+        result = await self.transfer_money(srcid, destuser.id, intamount, note, True)
+        if result:
+            await ctx.reply('The transfer was successful!')
+        else:
+            balance = self.get_user_balance(srcid)
+            await ctx.reply(f'The transfer failed. Make sure the source has enough VeggieBucks (current balance is {balance:,})')
 
-    def get_user_rank(self, id, descending):
-        if not self.user_signed_up(id):
-            return -1
-
-        cur = db.get_cursor()
-
-        cmd = "SELECT COUNT(*) FROM currency_balances WHERE CAST(balance AS INTEGER)"
-        cmd = cmd + (">" if descending else "<")
-        cmd = cmd + "(SELECT CAST(balance AS INTEGER) FROM currency_balances WHERE user=?)"
-        db.execute(cur, cmd, (id,))
-        row = cur.fetchone()
-
-        if row is None:
-            return -1
-
-        return row[0] + 1
-
-    @commands.command(aliases=["leaderboard"])
+    @commands.command(help="Show the VeggieBuck leaderboard", aliases=["leaderboard"])
     async def leaderboards(self, ctx):
         MAX_USERS = 10
 
@@ -222,7 +234,6 @@ class CurrencyCog(commands.Cog):
         msg = f"You are currently position {self.get_user_rank(ctx.author.id, True)} on the leaderboard."
 
         await ctx.send(msg, embed=embed)
-
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
