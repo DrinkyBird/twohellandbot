@@ -173,8 +173,8 @@ class CurrencyCog(commands.Cog):
             db.commit()
         else:
             now = time.time()
-            lastmod = math.floor(row[1]) % 86400
-            nowmod = math.floor(now) % 86400
+            lastmod = math.floor(math.floor(row[1]) / 86400)
+            nowmod = math.floor(math.floor(now) / 86400)
 
             if nowmod > lastmod:
                 print(f'Giving daily chat bonus to {dest.id} as {nowmod} > {lastmod}')
