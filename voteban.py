@@ -6,6 +6,7 @@ import util
 import db
 import time
 import math
+import datetime
 
 class VoteBanCog(commands.Cog):
     def __init__(self, bot):
@@ -53,7 +54,7 @@ class VoteBanCog(commands.Cog):
         msg = await channel.fetch_message(msgid)
         victim = guild.get_member(victimid)
 
-        await msg.edit(content="Voting has ended.")
+        await msg.edit(content="Voting has ended.", embed=None)
 
         print(msg.reactions)
 
@@ -142,3 +143,29 @@ class VoteBanCog(commands.Cog):
 
         self.active_votes.append(user.id)
         self.bot.loop.create_task(self.vote_callback(ctx, user.id, msg.channel.id, msg.id))
+
+    @commands.command(help="Shows all banned users", aliases=["bans", "wallofshame"])
+    async def banlist(self, ctx):
+        cur = db.get_cursor()
+        db.execute(cur, 'SELECT user, time FROM bans WHERE guild = ?', (str(ctx.guild.id),))
+        rows = cur.fetchall()
+
+        if len(rows) < 1:
+            await ctx.reply('Nobody is banned... right now.')
+        else:
+            s = '__**Wall of Shame**__\n'
+
+            for row in rows:
+                userid = int(row[0])
+                user = self.bot.get_user(userid)
+                bantime = row[1]
+                unbantime = bantime + config.VOTEBAN_BAN_DURATION
+
+                username = f'Unknown user {userid}'
+                if user is not None:
+                    username = f'{user.name}#{user.discriminator}'
+
+                formattedtime = datetime.datetime.utcfromtimestamp(unbantime).strftime('%Y-%m-%d %H:%M:%S %Z')
+                s += f'{username} until {formattedtime}\n'
+
+            await ctx.reply(s)
