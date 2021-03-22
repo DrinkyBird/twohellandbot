@@ -119,7 +119,7 @@ class CurrencyCog(commands.Cog):
             await ctx.reply('The transfer was successful!')
         else:
             balance = self.get_user_balance(ctx.author.id)
-            await ctx.reply(f'The transfer failed. Make sure you have enough VeggieBucks (your current balance is {balance:,}.')
+            await ctx.reply(f'The transfer failed. Make sure you have enough VeggieBucks (your current balance is {balance:,})')
 
     @commands.command(hidden=True)
     async def give(self, ctx, destination, amount):
