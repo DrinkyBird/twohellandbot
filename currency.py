@@ -240,7 +240,8 @@ class CurrencyCog(commands.Cog):
     @commands.command(help="View your bank statement")
     async def statement(self, ctx):
         cur = db.get_cursor()
-        db.execute(cur, "SELECT * FROM `currency_ledger` WHERE `from`=? OR `to`=?", (ctx.author.id, ctx.author.id))
+        db.execute(cur, "SELECT * FROM `currency_ledger` WHERE `from`=? OR `to`=? ORDER BY timestamp DESC",
+                   (ctx.author.id, ctx.author.id))
         rows = cur.fetchall()
 
         if len(rows) < 1:
