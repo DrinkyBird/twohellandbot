@@ -102,6 +102,24 @@ class CurrencyCog(commands.Cog):
         bonus = self.get_daily_bonus(ctx.author)
         await ctx.reply(f'Your balance is currently {balance:,} VeggieBucks. Your daily chatting bonus is {bonus:,}.')
 
+    @commands.command(hidden=True)
+    async def fbalance(self, ctx, user):
+        if ctx.author.id not in config.ADMINS:
+            return
+
+        targetid = util.argument_to_id(user)
+        targetuser = ctx.guild.get_member(targetid)
+        if targetuser is None:
+            await ctx.reply('No such user')
+            return
+
+        await self.create_account(targetid)
+
+        balance = self.get_user_balance(targetid)
+        bonus = self.get_daily_bonus(targetuser)
+        fullname = f'{targetuser.name}#{targetuser.discriminator}'
+        await ctx.reply(f'{fullname}\'s balance is currently {balance:,} VeggieBucks. Their daily chatting bonus is {bonus:,}.')
+
     @commands.command()
     async def transfer(self, ctx, destination, amount, *, note=""):
         destid = util.argument_to_id(destination)
