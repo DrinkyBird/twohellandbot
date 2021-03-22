@@ -172,12 +172,12 @@ class CurrencyCog(commands.Cog):
                        (str(dest.id), time.time()))
             db.commit()
         else:
-            print(f'Giving daily chat bonus to {dest.id}')
             now = time.time()
             lastmod = math.floor(row[1]) % 86400
             nowmod = math.floor(now) % 86400
 
             if nowmod > lastmod:
+                print(f'Giving daily chat bonus to {dest.id} as {nowmod} > {lastmod}')
                 await self.transfer_money(self.bot.user.id, dest.id, config.CURRENCY_DAILY_BONUS,
                                           "Daily chatting bonus", True)
                 db.execute(cur, "UPDATE `currency_daily` SET `last_claimed`=? WHERE `user`=?",
