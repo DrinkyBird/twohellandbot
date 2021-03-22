@@ -54,7 +54,7 @@ class VoteBanCog(commands.Cog):
         msg = await channel.fetch_message(msgid)
         victim = guild.get_member(victimid)
 
-        await msg.edit(content="Voting has ended.", embed=None)
+        await msg.delete()
 
         print(msg.reactions)
 
