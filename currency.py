@@ -413,6 +413,8 @@ class CurrencyCog(commands.Cog):
             meoff = 0
             if reaction.me:
                 meoff = 1
+            if not reaction.custom_emoji:
+                continue
 
             emoji = reaction.emoji
             if emoji.id == sourceemoji.id:
