@@ -422,15 +422,15 @@ class CurrencyCog(commands.Cog):
             elif emoji.id == destemoji.id:
                 novotes += reaction.count - meoff
 
-        totalvotes = yesvotes + novotes
-        if totalvotes < config.LAWSUIT_MINIMUM_VOTES:
-            await ctx.send(f":x: The lawsuit was cancelled as the minimum vote amount ({config.LAWSUIT_MINIMUM_VOTES}) was not reached.")
-            return
-
         print(f"plaintiff: {yesvotes} defendant: {novotes}")
         votes = f"<:{sourceemoji.name}:{sourceemoji.id}> {yesvotes} - {novotes} <:{destemoji.name}:{destemoji.id}>"
 
         await message.delete()
+
+        totalvotes = yesvotes + novotes
+        if totalvotes < config.LAWSUIT_MINIMUM_VOTES:
+            await ctx.send(f":x: The lawsuit was cancelled as the minimum vote amount ({config.LAWSUIT_MINIMUM_VOTES}) was not reached.")
+            return
 
         if yesvotes > novotes:
             # suit won
