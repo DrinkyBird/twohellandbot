@@ -365,7 +365,7 @@ class CurrencyCog(commands.Cog):
 
         balance = self.get_user_balance(srcuser.id)
         if amount > balance:
-            await ctx.reply(f"You can't sue for more than your current balance ({balance:,}.")
+            await ctx.reply(f"You can't sue for more than your current balance ({balance:,}).")
             return
 
         self.lawsuit = [srcuser.id, targetuser.id]
