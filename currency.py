@@ -149,7 +149,7 @@ class CurrencyCog(commands.Cog):
         fullname = f'{targetuser.name}#{targetuser.discriminator}'
         await ctx.reply(f'{fullname}\'s balance is currently {balance:,} VeggieBucks. Their daily chatting bonus is {bonus:,}.')
 
-    @commands.command()
+    @commands.command(help="Send money to someone")
     async def transfer(self, ctx, destination, amount, *, note=""):
         destid = util.argument_to_id(destination)
         destuser = self.bot.get_user(destid)
@@ -204,6 +204,13 @@ class CurrencyCog(commands.Cog):
 
     @commands.command(help="Show the VeggieBuck leaderboard", aliases=["leaderboard"])
     async def leaderboards(self, ctx):
+        await self.do_leaderboard(ctx, True)
+
+    @commands.command(help="Show the poor people leaderboard", aliases=["poor"])
+    async def poverty(self, ctx):
+        await self.do_leaderboard(ctx, False)
+
+    async def do_leaderboard(self, ctx, reverse):
         MAX_USERS = 10
 
         cur = db.get_cursor()
@@ -220,7 +227,7 @@ class CurrencyCog(commands.Cog):
             if user != self.bot.user.id:
                 total += row["balance"]
 
-        sort = sorted(countmap, key=countmap.get, reverse=True)
+        sort = sorted(countmap, key=countmap.get, reverse=reverse)
 
         embed = discord.Embed(name="VeggieBuck Leaderboards", color=discord.Colour.green())
         embed.set_author(name="Montclair Community Bank")
@@ -320,7 +327,7 @@ class CurrencyCog(commands.Cog):
         db.execute(cur, "DELETE FROM `old_emoji`")
         db.commit()
 
-    @commands.command()
+    @commands.command(help="Sue someone")
     async def sue(self, ctx, target=None, amountstr=None):
         if target is None or amountstr is None:
             await ctx.reply(f"**Syntax:** `{config.COMMAND_PREFIX}sue <user> <amount>`")
