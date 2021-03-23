@@ -29,6 +29,14 @@ class CurrencyCog(commands.Cog):
         self.bot = bot
         self.lawsuit = None
         self.loss_cooldown = {}
+        self.slots_emojis = []
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        guild = self.bot.get_guild(config.SLOTS_EMOJI_GUILD)
+        for key in config.SLOTS_EMOJIS:
+            emoji = await guild.fetch_emoji(key)
+            self.slots_emojis.append(emoji)
 
     async def create_account(self, uid):
         if not self.user_signed_up(uid):
@@ -338,8 +346,8 @@ class CurrencyCog(commands.Cog):
         db.commit()
 
     @commands.command(help="Sue someone")
-    async def sue(self, ctx, target=None, amountstr=None):
-        if target is None or amountstr is None:
+    async def sue(self, ctx, defandant_mention=None, amountstr=None):
+        if defandant_mention is None or amountstr is None:
             await ctx.reply(f"**Syntax:** `{config.COMMAND_PREFIX}sue <user> <amount>`")
             return
 
@@ -352,10 +360,10 @@ class CurrencyCog(commands.Cog):
                 await ctx.reply(f"You must wait after losing a lawsuit before you can start a new one")
                 return
 
-        srcuser = ctx.author
-        targetid = util.argument_to_id(target)
-        targetuser = self.bot.get_user(targetid)
-        if targetuser is None:
+        plaintiff = ctx.author
+        defendant_id = util.argument_to_id(defandant_mention)
+        defendant = self.bot.get_user(defendant_id)
+        if defendant is None:
             await ctx.reply('That user doesn\'t exist!')
             return
         amount = int(amountstr)
@@ -365,46 +373,46 @@ class CurrencyCog(commands.Cog):
             await ctx.reply(f"You must sue for at least {MIN_AMOUNT:,} VeggieBucks.")
             return
 
-        if srcuser.id == targetuser.id:
+        if plaintiff.id == defendant.id:
             await ctx.reply("You can't sue yourself!")
             return
 
-        if targetuser.id == self.bot.user.id:
+        if defendant.id == self.bot.user.id:
             await ctx.reply("You can't sue the court!")
             return
 
-        balance = self.get_user_balance(srcuser.id)
+        balance = self.get_user_balance(plaintiff.id)
         if amount > balance:
             await ctx.reply(f"You can't sue for more than your current balance ({balance:,}).")
             return
 
-        self.lawsuit = [srcuser.id, targetuser.id]
+        self.lawsuit = [plaintiff.id, defendant.id]
 
         try:
             loadmsg = await ctx.reply("<a:load:823714189901037579> Preparing lawsuit, please wait...",
                                       allowed_mentions=discord.AllowedMentions.none())
             await self.remove_old_emoji()
 
-            sourceemoji = await self.upload_user_emoji(ctx.author)
-            destemoji = await self.upload_user_emoji(targetuser)
+            plaintiff_emoji = await self.upload_user_emoji(ctx.author)
+            defendant_emoji = await self.upload_user_emoji(defendant)
 
             s = ":warning: **COURT IS NOW IN SESSION!** :warning:\n"
-            s += f"{srcuser.mention} is suing {targetuser.mention} for {amount:,} VeggieBucks.\n"
-            s += f"React with <:{sourceemoji.name}:{sourceemoji.id}> to side with {srcuser.mention}. "
-            s += f"If {srcuser.mention} wins the lawsuit, then {targetuser.mention} will have to pay {amount:,} VeggieBucks to {srcuser.mention}.\n"
-            s += f"React with <:{destemoji.name}:{destemoji.id}> to side with {targetuser.mention}. "
-            s += f"If {srcuser.mention} loses the lawsuit, then {srcuser.mention} will have to pay {amount:,} VeggieBucks to {targetuser.mention}.\n"
+            s += f"{plaintiff.mention} is suing {defendant.mention} for {amount:,} VeggieBucks.\n"
+            s += f"React with <:{plaintiff_emoji.name}:{plaintiff_emoji.id}> to side with {plaintiff.mention}. "
+            s += f"If {plaintiff.mention} wins the lawsuit, then {defendant.mention} will have to pay {amount:,} VeggieBucks to {plaintiff.mention}.\n"
+            s += f"React with <:{defendant_emoji.name}:{defendant_emoji.id}> to side with {defendant.mention}. "
+            s += f"If {plaintiff.mention} loses the lawsuit, then {plaintiff.mention} will have to pay {amount:,} VeggieBucks to {defendant.mention}.\n"
             s += f"This lawsuit will last {config.LAWSUIT_DURATION} seconds before a verdict is reached. "
             s += f"If the minimum vote amount ({config.LAWSUIT_MINIMUM_VOTES}) is not reached, the lawsuit will be cancelled."
 
             await loadmsg.delete()
             msg = await ctx.send(s)
 
-            await msg.add_reaction(sourceemoji)
-            await msg.add_reaction(destemoji)
+            await msg.add_reaction(plaintiff_emoji)
+            await msg.add_reaction(defendant_emoji)
 
             self.bot.loop.create_task(
-                self.lawsuit_callback(ctx, srcuser, targetuser, sourceemoji, destemoji, amount, msg.id))
+                self.lawsuit_callback(ctx, plaintiff, defendant, plaintiff_emoji, defendant_emoji, amount, msg.id))
         except Exception as ex:
             self.lawsuit = None
             await ctx.reply("An error occured while trying to start the lawsuit: `" + str(ex) + "`")
@@ -418,9 +426,7 @@ class CurrencyCog(commands.Cog):
         else:
             return amount, 0
 
-    async def lawsuit_callback(self, ctx, srcuser, targetuser, sourceemoji, destemoji, amount, messageid):
-        #source is yes
-        #target/dest is no
+    async def lawsuit_callback(self, ctx, plaintiff, defendant, plaintiff_emoji, defendant_emoji, amount, messageid):
         await asyncio.sleep(config.LAWSUIT_DURATION)
 
         try:
@@ -443,13 +449,13 @@ class CurrencyCog(commands.Cog):
                 continue
 
             emoji = reaction.emoji
-            if emoji.id == sourceemoji.id:
+            if emoji.id == plaintiff_emoji.id:
                 yesvotes += reaction.count - meoff
-            elif emoji.id == destemoji.id:
+            elif emoji.id == defendant_emoji.id:
                 novotes += reaction.count - meoff
 
         print(f"plaintiff: {yesvotes} defendant: {novotes}")
-        votes = f"<:{sourceemoji.name}:{sourceemoji.id}> {yesvotes} - {novotes} <:{destemoji.name}:{destemoji.id}>"
+        votes = f"<:{plaintiff_emoji.name}:{plaintiff_emoji.id}> {yesvotes} - {novotes} <:{defendant_emoji.name}:{defendant_emoji.id}>"
 
         await message.delete()
 
@@ -460,25 +466,59 @@ class CurrencyCog(commands.Cog):
 
         if yesvotes > novotes:
             # suit won
-            to_plaintiff, to_court = self.get_amount_paid(self.get_user_balance(targetuser.id), amount)
-            await self.transfer_money(targetuser.id, srcuser.id, to_plaintiff, "Lawsuit", True, True)
-            await self.transfer_money(targetuser.id, self.bot.user.id, to_court, "Lawsuit", True, True)
+            to_plaintiff, to_court = self.get_amount_paid(self.get_user_balance(defendant.id), amount)
+            await self.transfer_money(defendant.id, plaintiff.id, to_plaintiff, "Lawsuit", True, True)
+            await self.transfer_money(defendant.id, self.bot.user.id, to_court, "Lawsuit", True, True)
             if to_court > 0:
-                await ctx.send(f"{srcuser.mention} wins the lawsuit ({votes})! {targetuser.mention} is forced to pay them {to_plaintiff:,} VeggieBucks and {to_court:,} VeggieBucks to the court.")
+                await ctx.send(f"{plaintiff.mention} wins the lawsuit ({votes})! {defendant.mention} is forced to pay them {to_plaintiff:,} VeggieBucks and {to_court:,} VeggieBucks to the court.")
             else:
-                await ctx.send(f"{srcuser.mention} wins the lawsuit ({votes})! {targetuser.mention} is forced to pay them {to_plaintiff:,} VeggieBucks.")
+                await ctx.send(f"{plaintiff.mention} wins the lawsuit ({votes})! {defendant.mention} is forced to pay them {to_plaintiff:,} VeggieBucks.")
 
-            self.loss_cooldown[targetuser.id] = time.time()
+            self.loss_cooldown[defendant.id] = time.time()
         else:
             # suit lost
-            to_defendant, to_court = self.get_amount_paid(self.get_user_balance(srcuser.id), amount)
-            await self.transfer_money(srcuser.id, targetuser.id, to_defendant, "Lawsuit", True, True)
-            await self.transfer_money(srcuser.id, self.bot.user.id, to_court, "Lawsuit", True, True)
+            to_defendant, to_court = self.get_amount_paid(self.get_user_balance(plaintiff.id), amount)
+            await self.transfer_money(plaintiff.id, defendant.id, to_defendant, "Lawsuit", True, True)
+            await self.transfer_money(plaintiff.id, self.bot.user.id, to_court, "Lawsuit", True, True)
             if to_court > 0:
-                await ctx.send(f"{srcuser.mention} loses the lawsuit ({votes})! They are forced to pay {targetuser.mention} {to_defendant:,} VeggieBucks and {to_court:,} VeggieBucks to the court.")
+                await ctx.send(f"{plaintiff.mention} loses the lawsuit ({votes})! They are forced to pay {defendant.mention} {to_defendant:,} VeggieBucks and {to_court:,} VeggieBucks to the court.")
             else:
-                await ctx.send(f"{srcuser.mention} loses the lawsuit ({votes})! They are forced to pay {targetuser.mention} {to_defendant:,} VeggieBucks.")
-            self.loss_cooldown[srcuser.id] = time.time()
+                await ctx.send(f"{plaintiff.mention} loses the lawsuit ({votes})! They are forced to pay {defendant.mention} {to_defendant:,} VeggieBucks.")
+            self.loss_cooldown[plaintiff.id] = time.time()
+
+    @commands.command()
+    async def slots(self, ctx, amountstr=None):
+        if amountstr is None:
+            await ctx.reply(f"**Syntax:** `{config.COMMAND_PREFIX}slots <amount>`")
+            return
+
+        amount = int(amountstr)
+
+        if not self.user_can_afford(ctx.author.id, amount):
+            balance = self.get_user_balance(ctx.author.id)
+            await ctx.reply(f"You can't afford that much. Your current balance is {balance:,} VeggieBucks.")
+            return
+
+        await self.transfer_money(ctx.author.id, self.bot.user.id, amount, "Played slots", True)
+
+        a = random.choice(self.slots_emojis)
+        b = random.choice(self.slots_emojis)
+        c = random.choice(self.slots_emojis)
+
+        machine = f"<:{a.name}:{a.id}><:{b.name}:{b.id}><:{c.name}:{c.id}>"
+
+        multiplier = 0
+        if a.id == b.id and a.id == c.id:
+            multiplier = config.SLOTS_EMOJIS[a.id]
+
+        if multiplier > 0:
+            reward = math.floor(amount * multiplier)
+            await self.transfer_money(self.bot.user.id, ctx.author.id, reward, "Won slots!", True)
+
+            await ctx.reply(f"**You win!**\n{machine}\nYour reward is {reward:,} VeggieBucks.")
+        else:
+            await ctx.reply(f"**You lost!**\n{machine}")
+
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
