@@ -494,6 +494,10 @@ class CurrencyCog(commands.Cog):
 
         amount = int(amountstr)
 
+        if amount < 1:
+            await ctx.reply("You must use at least 1 VeggieBuck.")
+            return
+
         if not self.user_can_afford(ctx.author.id, amount):
             balance = self.get_user_balance(ctx.author.id)
             await ctx.reply(f"You can't afford that much. Your current balance is {balance:,} VeggieBucks.")
