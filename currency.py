@@ -338,7 +338,7 @@ class CurrencyCog(commands.Cog):
             return
 
         if ctx.author.id in self.loss_cooldown:
-            if time.time() + config.LAWSUIT_LOSS_COOLDOWN > self.loss_cooldown[ctx.author.id]:
+            if time.time() > self.loss_cooldown[ctx.author.id] + config.LAWSUIT_LOSS_COOLDOWN :
                 await ctx.reply(f"You must wait after losing a lawsuit before you can start a new one")
                 return
 
@@ -359,29 +359,45 @@ class CurrencyCog(commands.Cog):
             await ctx.reply("You can't sue yourself!")
             return
 
+        if targetuser.id == self.bot.user.id:
+            await ctx.reply("You can't sue the court!")
+            return
+
+        balance = self.get_user_balance(srcuser.id)
+        if amount > balance:
+            await ctx.reply(f"You can't sue for more than your current balance ({balance:,}.")
+            return
+
         self.lawsuit = [srcuser.id, targetuser.id]
-        loadmsg = await ctx.reply("<a:load:823714189901037579> Preparing lawsuit, please wait...", allowed_mentions=discord.AllowedMentions.none())
-        await self.remove_old_emoji()
 
-        sourceemoji = await self.upload_user_emoji(ctx.author)
-        destemoji = await self.upload_user_emoji(targetuser)
+        try:
+            loadmsg = await ctx.reply("<a:load:823714189901037579> Preparing lawsuit, please wait...",
+                                      allowed_mentions=discord.AllowedMentions.none())
+            await self.remove_old_emoji()
 
-        s = ":warning: **COURT IS NOW IN SESSION!** :warning:\n"
-        s += f"{srcuser.mention} is suing {targetuser.mention} for {amount:,} VeggieBucks.\n"
-        s += f"React with <:{sourceemoji.name}:{sourceemoji.id}> to side with {srcuser.mention}. "
-        s += f"If {srcuser.mention} wins the lawsuit, then {targetuser.mention} will have to pay {amount:,} VeggieBucks to {srcuser.mention}.\n"
-        s += f"React with <:{destemoji.name}:{destemoji.id}> to side with {targetuser.mention}. "
-        s += f"If {srcuser.mention} loses the lawsuit, then {srcuser.mention} will have to pay {amount:,} VeggieBucks to {targetuser.mention}.\n"
-        s += f"This lawsuit will last {config.LAWSUIT_DURATION} seconds before a verdict is reached. "
-        s += f"If the minimum vote amount ({config.LAWSUIT_MINIMUM_VOTES}) is not reached, the lawsuit will be cancelled."
+            sourceemoji = await self.upload_user_emoji(ctx.author)
+            destemoji = await self.upload_user_emoji(targetuser)
 
-        await loadmsg.delete()
-        msg = await ctx.send(s)
+            s = ":warning: **COURT IS NOW IN SESSION!** :warning:\n"
+            s += f"{srcuser.mention} is suing {targetuser.mention} for {amount:,} VeggieBucks.\n"
+            s += f"React with <:{sourceemoji.name}:{sourceemoji.id}> to side with {srcuser.mention}. "
+            s += f"If {srcuser.mention} wins the lawsuit, then {targetuser.mention} will have to pay {amount:,} VeggieBucks to {srcuser.mention}.\n"
+            s += f"React with <:{destemoji.name}:{destemoji.id}> to side with {targetuser.mention}. "
+            s += f"If {srcuser.mention} loses the lawsuit, then {srcuser.mention} will have to pay {amount:,} VeggieBucks to {targetuser.mention}.\n"
+            s += f"This lawsuit will last {config.LAWSUIT_DURATION} seconds before a verdict is reached. "
+            s += f"If the minimum vote amount ({config.LAWSUIT_MINIMUM_VOTES}) is not reached, the lawsuit will be cancelled."
 
-        await msg.add_reaction(sourceemoji)
-        await msg.add_reaction(destemoji)
+            await loadmsg.delete()
+            msg = await ctx.send(s)
 
-        self.bot.loop.create_task(self.lawsuit_callback(ctx, srcuser, targetuser, sourceemoji, destemoji, amount, msg.id))
+            await msg.add_reaction(sourceemoji)
+            await msg.add_reaction(destemoji)
+
+            self.bot.loop.create_task(
+                self.lawsuit_callback(ctx, srcuser, targetuser, sourceemoji, destemoji, amount, msg.id))
+        except Exception as ex:
+            self.lawsuit = None
+            await ctx.reply("An error occured while trying to start the lawsuit: `" + str(ex) + "`")
 
     def get_amount_paid(self, balance, amount):
         if balance < 0:
