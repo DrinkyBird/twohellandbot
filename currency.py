@@ -172,7 +172,7 @@ class CurrencyCog(commands.Cog):
 
         fees = 0
         if intamount > 1000:
-            fees = math.floor(intamount * 0.02)
+            fees = math.floor((intamount - 1000) * 0.02)
         totalamount = intamount + fees
 
         if self.lawsuit is not None and (ctx.author.id in self.lawsuit or destuser.id in self.lawsuit):
@@ -184,12 +184,12 @@ class CurrencyCog(commands.Cog):
             return
 
         result = await self.transfer_money(ctx.author.id, destuser.id, intamount, note, True)
-        await self.transfer_money(ctx.author.id, self.bot.user.id, fees, note, True)
+        await self.transfer_money(ctx.author.id, self.bot.user.id, fees, "Transfer fees", True)
         if result:
-            await ctx.reply('The transfer was successful!')
+            await ctx.reply(f'The transfer was successful. You paid {fees:,} in transfer fees.')
         else:
             balance = self.get_user_balance(ctx.author.id)
-            await ctx.reply(f'The transfer failed. Make sure you have enough VeggieBucks (your current balance is {balance:,})')
+            await ctx.reply(f'The transfer failed.')
 
     @commands.command(hidden=True)
     async def ftransfer(self, ctx, source, destination, amount, *, note=""):
