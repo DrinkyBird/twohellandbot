@@ -427,7 +427,7 @@ class CurrencyCog(commands.Cog):
             # suit lost
             to_defendant, to_court = self.get_amount_paid(self.get_user_balance(srcuser.id), amount)
             await self.transfer_money(srcuser.id, targetuser.id, to_defendant, "Lawsuit", True, True)
-            await self.transfer_money(targetuser.id, self.bot.user.id, to_court, "Lawsuit", True, True)
+            await self.transfer_money(srcuser.id, self.bot.user.id, to_court, "Lawsuit", True, True)
             if to_court > 0:
                 await ctx.send(f"{srcuser.mention} loses the lawsuit ({votes})! They are forced to pay {targetuser.mention} {to_defendant:,} VeggieBucks and {to_court:,} VeggieBucks to the court.")
             else:
