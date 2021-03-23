@@ -171,6 +171,14 @@ class AdminCog(commands.Cog):
 
             await ctx.send(s)
 
+    @commands.command(hidden=True)
+    async def adminlist(self, ctx):
+        ls = []
+        for id in config.ADMINS:
+            ls.append(f"<@!{id}>")
+
+        await ctx.reply(", ".join(ls), allowed_mentions=discord.AllowedMentions.none())
+
     @commands.command(help="Show heap analysis", hidden=True)
     async def heap(self, ctx):
         if ctx.author.id in config.ADMINS:
