@@ -162,11 +162,21 @@ class CurrencyCog(commands.Cog):
             await ctx.reply("You must transfer at least 1 VeggieBuck!")
             return
 
+        fees = 0
+        if intamount > 1000:
+            fees = math.floor(intamount * 0.02)
+        totalamount = intamount + fees
+
         if self.lawsuit is not None and (ctx.author.id in self.lawsuit or destuser.id in self.lawsuit):
             await ctx.reply("One party is currently involved in a lawsuit.")
             return
 
+        if not self.user_can_afford(ctx.author.id, totalamount):
+            await ctx.reply(f"You can't afford this transaction of {intamount:,} VeggieBucks + {fees:,} in fees. Your current balancei s {self.get_user_balance(ctx.author.id):,}")
+            return
+
         result = await self.transfer_money(ctx.author.id, destuser.id, intamount, note, True)
+        await self.transfer_money(ctx.author.id, self.bot.user.id, fees, note, True)
         if result:
             await ctx.reply('The transfer was successful!')
         else:
@@ -338,7 +348,7 @@ class CurrencyCog(commands.Cog):
             return
 
         if ctx.author.id in self.loss_cooldown:
-            if time.time() > self.loss_cooldown[ctx.author.id] + config.LAWSUIT_LOSS_COOLDOWN :
+            if time.time() < self.loss_cooldown[ctx.author.id] + config.LAWSUIT_LOSS_COOLDOWN :
                 await ctx.reply(f"You must wait after losing a lawsuit before you can start a new one")
                 return
 
