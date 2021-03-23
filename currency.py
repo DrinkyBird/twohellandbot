@@ -224,7 +224,7 @@ class CurrencyCog(commands.Cog):
             user = int(row["user"])
             countmap[user] = row["balance"]
 
-            if user != self.bot.user.id:
+            if row["balance"] >= 0:
                 total += row["balance"]
 
         sort = sorted(countmap, key=countmap.get, reverse=reverse)
