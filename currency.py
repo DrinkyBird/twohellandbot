@@ -486,6 +486,13 @@ class CurrencyCog(commands.Cog):
                 await ctx.send(f"{plaintiff.mention} loses the lawsuit ({votes})! They are forced to pay {defendant.mention} {to_defendant:,} VeggieBucks.")
             self.loss_cooldown[plaintiff.id] = time.time()
 
+    def slots_remove_emoji(self, ls, wanted, chance):
+        if random.randrange(0, chance) == 0:
+            i = wanted
+            while i == wanted:
+                i = random.choice(ls)
+            ls.remove(i)
+
     @commands.command()
     async def slots(self, ctx, amountstr=None):
         if amountstr is None:
@@ -505,9 +512,14 @@ class CurrencyCog(commands.Cog):
 
         await self.transfer_money(ctx.author.id, self.bot.user.id, amount, "Played slots", True)
 
-        a = random.choice(self.slots_emojis)
-        b = random.choice(self.slots_emojis)
-        c = random.choice(self.slots_emojis)
+        ls = self.slots_emojis.copy()
+
+        a = random.choice(ls)
+        self.slots_remove_emoji(ls, a, 10)
+        b = random.choice(ls)
+        if a.id == b.id:
+            self.slots_remove_emoji(ls, a, 50)
+        c = random.choice(ls)
 
         machine = f"<:{a.name}:{a.id}><:{b.name}:{b.id}><:{c.name}:{c.id}>"
 
