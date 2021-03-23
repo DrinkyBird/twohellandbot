@@ -372,7 +372,8 @@ class CurrencyCog(commands.Cog):
         s += f"If {srcuser.mention} wins the lawsuit, then {targetuser.mention} will have to pay {amount:,} VeggieBucks to {srcuser.mention}.\n"
         s += f"React with <:{destemoji.name}:{destemoji.id}> to side with {targetuser.mention}. "
         s += f"If {srcuser.mention} loses the lawsuit, then {srcuser.mention} will have to pay {amount:,} VeggieBucks to {targetuser.mention}.\n"
-        s += f"This lawsuit will last {config.LAWSUIT_DURATION} seconds before a verdict is reached."
+        s += f"This lawsuit will last {config.LAWSUIT_DURATION} seconds before a verdict is reached. "
+        s += f"If the minimum vote amount ({config.LAWSUIT_MINIMUM_VOTES}) is not reached, the lawsuit will be cancelled."
 
         await loadmsg.delete()
         msg = await ctx.send(s)
@@ -418,6 +419,11 @@ class CurrencyCog(commands.Cog):
                 yesvotes += reaction.count - meoff
             elif emoji.id == destemoji.id:
                 novotes += reaction.count - meoff
+
+        totalvotes = yesvotes + novotes
+        if totalvotes < config.LAWSUIT_MINIMUM_VOTES:
+            await ctx.send(f":x: The lawsuit was cancelled as the minimum vote amount ({config.LAWSUIT_MINIMUM_VOTES}) was not reached.")
+            return
 
         print(f"plaintiff: {yesvotes} defendant: {novotes}")
         votes = f"<:{sourceemoji.name}:{sourceemoji.id}> {yesvotes} - {novotes} <:{destemoji.name}:{destemoji.id}>"
