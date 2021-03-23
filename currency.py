@@ -382,7 +382,7 @@ class CurrencyCog(commands.Cog):
         if amount > balance:
             return balance, amount - balance
         else:
-            return balance, 0
+            return amount, 0
 
     async def lawsuit_callback(self, ctx, srcuser, targetuser, sourceemoji, destemoji, amount, messageid):
         #source is yes

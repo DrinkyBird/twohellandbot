@@ -112,4 +112,10 @@ CREATE TABLE IF NOT EXISTS "currency_daily" (
         "last_claimed"  INTEGER,
         PRIMARY KEY("user")
 );
+
+CREATE TABLE IF NOT EXISTS "old_emoji" (
+        "guild"  TEXT,
+        "id"  TEXT,
+        PRIMARY KEY("id")
+);
 ```
