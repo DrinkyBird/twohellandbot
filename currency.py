@@ -290,6 +290,7 @@ class CurrencyCog(commands.Cog):
             i = 0
             linkregex = re.compile(r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))")
             for row in rows:
+                id = row["id"]
                 amount = row["amount"]
                 from_id = int(row["from"])
                 to_id = int(row["to"])
@@ -300,7 +301,7 @@ class CurrencyCog(commands.Cog):
                 fromuser = self.bot.get_user(from_id)
                 touser = self.bot.get_user(to_id)
 
-                s += f"**{sts} - {amount} VeggieBucks - from {fromuser.mention} to {touser.mention}**\n"
+                s += f"**#{id} - {sts} - {amount} VeggieBucks - from {fromuser.mention} to {touser.mention}**\n"
                 if not note:
                     s += "*No note*\n"
                 else:
