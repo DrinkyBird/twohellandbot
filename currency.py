@@ -180,7 +180,7 @@ class CurrencyCog(commands.Cog):
             return
 
         if not self.user_can_afford(ctx.author.id, totalamount):
-            await ctx.reply(f"You can't afford this transaction of {intamount:,} VeggieBucks + {fees:,} in fees. Your current balancei s {self.get_user_balance(ctx.author.id):,}")
+            await ctx.reply(f"You can't afford this transaction of {intamount:,} VeggieBucks + {fees:,} in fees. Your current balance is {self.get_user_balance(ctx.author.id):,}.")
             return
 
         result = await self.transfer_money(ctx.author.id, destuser.id, intamount, note, True)
