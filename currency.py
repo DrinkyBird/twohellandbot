@@ -195,7 +195,7 @@ class CurrencyCog(commands.Cog):
             await ctx.reply("You must transfer at least 1 VeggieBuck!")
             return
 
-        result = await self.transfer_money(srcid, destuser.id, intamount, note, True)
+        result = await self.transfer_money(srcid, destuser.id, intamount, note, True, True)
         if result:
             await ctx.reply('The transfer was successful!')
         else:
