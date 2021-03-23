@@ -162,7 +162,7 @@ class CurrencyCog(commands.Cog):
             await ctx.reply("You must transfer at least 1 VeggieBuck!")
             return
 
-        if ctx.author.id in self.lawsuit or destuser.id in self.lawsuit:
+        if self.lawsuit is not None and (ctx.author.id in self.lawsuit or destuser.id in self.lawsuit):
             await ctx.reply("One party is currently involved in a lawsuit.")
             return
 
@@ -450,7 +450,7 @@ class CurrencyCog(commands.Cog):
         if from_user.id == to_user.id:
             return
 
-        if from_user.id in self.lawsuit or to_user.id in self.lawsuit:
+        if self.lawsuit is not None and (from_user.id in self.lawsuit or to_user.id in self.lawsuit):
             return
 
         await self.transfer_money(from_user.id, to_user.id, EMOJI_VALUES[emoji.id], f"{msg.jump_url}")
