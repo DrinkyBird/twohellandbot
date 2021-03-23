@@ -396,8 +396,9 @@ class CurrencyCog(commands.Cog):
         #target/dest is no
         await asyncio.sleep(config.LAWSUIT_DURATION)
 
-        message = await ctx.channel.fetch_message(messageid)
-        if message is None:
+        try:
+            message = await ctx.channel.fetch_message(messageid)
+        except:
             await ctx.send("The fucking message disappeared???")
             self.lawsuit = None
             return
