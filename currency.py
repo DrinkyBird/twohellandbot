@@ -500,7 +500,7 @@ class CurrencyCog(commands.Cog):
             await ctx.reply(f"**Syntax:** `{config.COMMAND_PREFIX}slots <amount>`")
             return
 
-        if ctx.author.id in self.lawsuit:
+        if self.lawsuit is not None and ctx.author.id in self.lawsuit:
             await ctx.reply("You're currently involved in a lawsuit! Now is NOT the time to gamble!!")
             return
 
