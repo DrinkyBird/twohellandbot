@@ -224,7 +224,7 @@ class CurrencyCog(commands.Cog):
     async def leaderboards(self, ctx):
         await self.do_leaderboard(ctx, True)
 
-    @commands.command(help="Show the poor people leaderboard", aliases=["poor"])
+    @commands.command(help="Show the poor people leaderboard", aliases=["poor", "broke"])
     async def poverty(self, ctx):
         await self.do_leaderboard(ctx, False)
 
