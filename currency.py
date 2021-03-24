@@ -109,7 +109,19 @@ class CurrencyCog(commands.Cog):
         db.commit()
 
         if not silent:
-            await source_user.send(f'Transferred {amount:,} VeggieBucks to {dest_user.mention} with note:\n>>> {note}')
+            msg_note = "*No note*" if not note else note
+            if source_user.id != self.bot.user.id:
+                try:
+                    await source_user.send(
+                        f'You sent {amount:,} VeggieBucks to {dest_user.mention}:\n>>> {msg_note}')
+                except:
+                    pass
+            if dest_user.id != self.bot.user.id:
+                try:
+                    await dest_user.send(
+                        f'You received {amount:,} VeggieBucks from {source_user.mention}:\n>>> {msg_note}')
+                except:
+                    pass
 
         return True
 
@@ -183,10 +195,10 @@ class CurrencyCog(commands.Cog):
             await ctx.reply(f"You can't afford this transaction of {intamount:,} VeggieBucks + {fees:,} in fees. Your current balance is {self.get_user_balance(ctx.author.id):,}.")
             return
 
-        result = await self.transfer_money(ctx.author.id, destuser.id, intamount, note, True)
+        result = await self.transfer_money(ctx.author.id, destuser.id, intamount, note, False)
         await self.transfer_money(ctx.author.id, self.bot.user.id, fees, "Transfer fees", True)
         if result:
-            await ctx.reply(f'The transfer was successful. You paid {fees:,} in transfer fees.')
+            await ctx.reply(f'The transfer was successful. You paid {fees:,} in transfer fees.', allowed_mentions=discord.AllowedMentions.none())
         else:
             balance = self.get_user_balance(ctx.author.id)
             await ctx.reply(f'The transfer failed.')
