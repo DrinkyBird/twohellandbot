@@ -369,6 +369,8 @@ class CurrencyCog(commands.Cog):
             return
         amount = int(amountstr)
 
+        defendant_balance = self.get_user_balance(defendant.id)
+
         MIN_AMOUNT = 200
         if amount < MIN_AMOUNT:
             await ctx.reply(f"You must sue for at least {MIN_AMOUNT:,} VeggieBucks.")
@@ -380,6 +382,11 @@ class CurrencyCog(commands.Cog):
 
         if defendant.id == self.bot.user.id:
             await ctx.reply("You can't sue the court!")
+            return
+
+        if defendant_balance - amount < -config.LAWSUIT_MAX_DEBT:
+            max_amount = abs(-config.LAWSUIT_MAX_DEBT - defendant_balance)
+            await ctx.reply(f"The most you can sue this user for is {max_amount:,} VeggieBucks.")
             return
 
         balance = self.get_user_balance(plaintiff.id)
