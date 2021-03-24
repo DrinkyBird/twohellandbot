@@ -571,12 +571,14 @@ class CurrencyCog(commands.Cog):
         await self.transfer_money(from_user.id, to_user.id, EMOJI_VALUES[emoji.id], f"{msg.jump_url}")
 
     def get_daily_bonus(self, member):
+        amt = config.CURRENCY_DAILY_BONUS_DEFAULT
+
         for role in member.roles:
             for roleid, amount in config.CURRENCY_DAILY_BONUSES:
                 if role.id == roleid:
-                    return amount
+                    amt = max(amt, amount)
 
-        return config.CURRENCY_DAILY_BONUS_DEFAULT
+        return amt
 
     @commands.Cog.listener()
     async def on_message(self, message):
