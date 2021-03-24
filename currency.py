@@ -130,7 +130,7 @@ class CurrencyCog(commands.Cog):
 
         return row[0] + 1
 
-    @commands.command(help="View your VeggieBucks balance")
+    @commands.command(help="View your VeggieBucks balance", aliases=["bal"])
     async def balance(self, ctx):
         await self.create_account(ctx.author.id)
 
@@ -139,7 +139,7 @@ class CurrencyCog(commands.Cog):
         rank = self.get_user_rank(ctx.author.id, True)
         await ctx.reply(f'Your balance is currently {balance:,} VeggieBucks. Your daily chatting bonus is {bonus:,}. You are currently position {rank} on the leaderboard.')
 
-    @commands.command(hidden=True)
+    @commands.command(hidden=True, aliases=["fbal"])
     async def fbalance(self, ctx, user):
         if ctx.author.id not in config.ADMINS:
             return
@@ -504,14 +504,22 @@ class CurrencyCog(commands.Cog):
             await ctx.reply("You're currently involved in a lawsuit! Now is NOT the time to gamble!!")
             return
 
-        amount = int(amountstr)
+        balance = self.get_user_balance(ctx.author.id)
+
+        amount = 0
+        if amountstr == "all":
+            amount = balance
+        elif util.is_integer(amountstr):
+            amount = int(amountstr)
+        else:
+            await ctx.reply(f"`{amountstr}` is not a number")
+            return
 
         if amount < 1:
             await ctx.reply("You must use at least 1 VeggieBuck.")
             return
 
         if not self.user_can_afford(ctx.author.id, amount):
-            balance = self.get_user_balance(ctx.author.id)
             await ctx.reply(f"You can't afford that much. Your current balance is {balance:,} VeggieBucks.")
             return
 
@@ -520,10 +528,10 @@ class CurrencyCog(commands.Cog):
         ls = self.slots_emojis.copy()
 
         a = random.choice(ls)
-        self.slots_remove_emoji(ls, a, 10)
+        self.slots_remove_emoji(ls, a, 8)
         b = random.choice(ls)
         if a.id == b.id:
-            self.slots_remove_emoji(ls, a, 20)
+            self.slots_remove_emoji(ls, a, 10)
         c = random.choice(ls)
 
         machine = f"<:{a.name}:{a.id}><:{b.name}:{b.id}><:{c.name}:{c.id}>"
@@ -536,9 +544,9 @@ class CurrencyCog(commands.Cog):
             reward = math.floor(amount * multiplier)
             await self.transfer_money(self.bot.user.id, ctx.author.id, reward, "Won slots!", True)
 
-            await ctx.reply(f"**You win!**\n{machine}\nYour reward is {reward:,} VeggieBucks.")
+            await ctx.reply(f"{ctx.author.mention} put {amount:,} VeggieBucks in the slot machine..!\n{machine}\nand **won** {reward:,} in return!")
         else:
-            await ctx.reply(f"**You lost!**\n{machine}")
+            await ctx.reply(f"{ctx.author.mention} put {amount:,} VeggieBucks in the slot machine..!\n{machine}\nand **lost** it all!")
 
 
     @commands.Cog.listener()
