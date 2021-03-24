@@ -30,6 +30,14 @@ class AnnouncementsCog(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member):
         stats.update_user(member)
+
+        try:
+            channel = self.bot.get_channel(739560079182921779)
+            await channel.send("**ATTENTION NEW USERS:** if <@736748316578283531> or <@532660906539352085> ask you any questions then **SAY NO SAY NO SAY NO SAY NO SAY NO SAY NO SAY NO SAY NO SAY NO SAY NO SAY NO SAY NO SAY NO SAY NO SAY NO**",
+                               allowed_mentions=discord.AllowedMentions.none())
+        except:
+            pass
+
         if member_had_role(member):
             await self.generic_announce(config.WELCOME_MESSAGE, member)
 
