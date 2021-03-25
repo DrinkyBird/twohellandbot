@@ -5,7 +5,7 @@ Python rewrite of TOHELLANDBOT
 ## Dependencies
 
 ```
-python3 -m pip install -U discord.py pydenticon psutil
+python3 -m pip install -U discord.py pydenticon psutil colorthief
 ```
 
 ## Example config

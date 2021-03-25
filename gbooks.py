@@ -1,8 +1,11 @@
 import discord
 from discord.ext import commands
 import requests
+import urllib.request
 import urllib.parse
 import config
+import colorthief
+import traceback
 
 class GoogleBooksCog(commands.Cog):
     def __init__(self, bot):
@@ -87,6 +90,14 @@ class GoogleBooksCog(commands.Cog):
                     if len(text) > 500:
                         text = text[:500] + '...'
                     embed.add_field(name='Description', value=text, inline=False)
+
+                try:
+                    thief = colorthief.ColorThief(urllib.request.urlopen(embed.thumbnail.url))
+                    r, g, b = thief.get_color()
+                    embed.colour = discord.Colour.from_rgb(r, g, b)
+                except Exception as e:
+                    traceback.print_exc()
+                    pass
 
                 await ctx.reply(f'Your query returned {totalItems} result{"" if totalItems == 1 else "s"}.', embed=embed)
         except Exception as e:
