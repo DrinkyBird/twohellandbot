@@ -447,7 +447,7 @@ class CurrencyCog(commands.Cog):
             return amount, 0
 
     async def lawsuit_callback(self, ctx, plaintiff, defendant, plaintiff_emoji, defendant_emoji, amount, messageid):
-        await asyncio.sleep(config.LAWSUIT_DURATION)
+        await asyncio.sleep(config.LAWSUIT_DURATION - 4)
 
         try:
             message = await ctx.channel.fetch_message(messageid)
@@ -477,6 +477,7 @@ class CurrencyCog(commands.Cog):
         print(f"plaintiff: {yesvotes} defendant: {novotes}")
         votes = f"<:{plaintiff_emoji.name}:{plaintiff_emoji.id}> {yesvotes} - {novotes} <:{defendant_emoji.name}:{defendant_emoji.id}>"
 
+        await asyncio.sleep(4)
         await message.delete()
 
         totalvotes = yesvotes + novotes
