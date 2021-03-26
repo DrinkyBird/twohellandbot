@@ -11,15 +11,11 @@ import re
 import requests
 import io
 import asyncio
+import stats
 from PIL import Image
 
 EMOJI_VALUES = {
-    817927111884144670: 1,
-    823664582316261446: 5,
-    823664581884248145: 50,
-    823664582412861481: 20,
-    823664581309104148: 10,
-    823664581373067274: 100
+
 }
 
 # DELETE FROM currency_balances; DELETE FROM currency_ledger; DELETE FROM currency_daily;
@@ -142,6 +138,12 @@ class CurrencyCog(commands.Cog):
 
         return row[0] + 1
 
+    def member_old_enough(self, member):
+        t = stats.get_member_first_join(member)
+        if time.time() < t + config.CURRENT_MIN_AGE:
+            return False
+        return True
+
     @commands.command(help="View your VeggieBucks balance", aliases=["bal"])
     async def balance(self, ctx):
         await self.create_account(ctx.author.id)
@@ -172,9 +174,17 @@ class CurrencyCog(commands.Cog):
     @commands.command(help="Send money to someone")
     async def transfer(self, ctx, destination, amount, *, note=""):
         destid = util.argument_to_id(destination)
-        destuser = self.bot.get_user(destid)
+        destuser = ctx.guild.get_member(destid)
         if destuser is None:
             await ctx.reply("That user doesn't exist!")
+            return
+
+        if not self.member_old_enough(ctx.author):
+            await ctx.reply("You have not been in the server long enough")
+            return
+
+        if not self.member_old_enough(destuser):
+            await ctx.reply("Destination user has not been in the server long enough")
             return
 
         intamount = int(amount)
@@ -364,6 +374,10 @@ class CurrencyCog(commands.Cog):
             await ctx.reply(f"**Syntax:** `{config.COMMAND_PREFIX}sue <user> <amount>`")
             return
 
+        if not self.member_old_enough(ctx.author):
+            await ctx.reply("That user hasn't been here long enough")
+            return
+
         if self.lawsuit is not None:
             await ctx.reply("A lawsuit is currently in progress.")
             return
@@ -375,9 +389,12 @@ class CurrencyCog(commands.Cog):
 
         plaintiff = ctx.author
         defendant_id = util.argument_to_id(defandant_mention)
-        defendant = self.bot.get_user(defendant_id)
+        defendant = ctx.guild.get_member(defendant_id)
         if defendant is None:
             await ctx.reply('That user doesn\'t exist!')
+            return
+        if not self.member_old_enough(defendant):
+            await ctx.reply("That user hasn't been here long enough")
             return
         amount = int(amountstr)
 
@@ -520,6 +537,10 @@ class CurrencyCog(commands.Cog):
             await ctx.reply(f"**Syntax:** `{config.COMMAND_PREFIX}slots <amount>`")
             return
 
+        if not self.member_old_enough(ctx.author):
+            await ctx.reply("You have not been here long enough")
+            return
+
         if self.lawsuit is not None and ctx.author.id in self.lawsuit:
             await ctx.reply("You're currently involved in a lawsuit! Now is NOT the time to gamble!!")
             return
@@ -573,10 +594,13 @@ class CurrencyCog(commands.Cog):
     async def on_raw_reaction_add(self, payload):
         guild = self.bot.get_guild(payload.guild_id)
         channel = self.bot.get_channel(payload.channel_id)
-        from_user = self.bot.get_user(payload.user_id)
+        from_user = guild.get_member(payload.user_id)
         emoji = payload.emoji
 
         if emoji.id not in EMOJI_VALUES:
+            return
+
+        if not self.member_old_enough(from_user):
             return
 
         msg = await channel.fetch_message(payload.message_id)

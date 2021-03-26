@@ -41,6 +41,32 @@ def update_user(user):
 
     db.commit()
 
+def record_member_first_join(member):
+    if member.guild.id != 688192420013146140:
+        return
+
+    cur = db.get_cursor()
+
+    db.execute(cur, 'SELECT COUNT(*) FROM seamen_joins WHERE user=?', (member.id,))
+    row = cur.fetchone()
+
+    if row[0] == 0:
+        db.execute(cur, "INSERT INTO seamen_joins (user, earliestdate) VALUES (?, ?)",
+                   (member.id, member.joined_at.timestamp()))
+        print(f"Update join date for {member.name}")
+
+def get_member_first_join(member):
+    cur = db.get_cursor()
+
+    db.execute(cur, 'SELECT earliestdate FROM seamen_joins WHERE user=?', (member.id,))
+    row = cur.fetchone()
+
+    if row is None:
+        record_member_first_join(member)
+        return member.joined_at.timestamp()
+
+    return row["earliestdate"]
+
 class StatsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -87,6 +113,17 @@ class StatsCog(commands.Cog):
     @commands.Cog.listener()
     async def on_user_update(self, before, after):
         update_user(after)
+
+    @commands.Cog.listener()
+    async def on_user_join(self, member):
+        record_member_first_join(member)
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        guild = self.bot.get_guild(688192420013146140)
+        if guild is not None:
+            for member in guild.members:
+                record_member_first_join(member)
 
 def on_command(ctx):
     increment_stat("commands_executed")
