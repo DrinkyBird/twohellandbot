@@ -15,7 +15,12 @@ import stats
 from PIL import Image
 
 EMOJI_VALUES = {
-
+    817927111884144670: 1,
+    823664582316261446: 5,
+    823664581884248145: 50,
+    823664582412861481: 20,
+    823664581309104148: 10,
+    823664581373067274: 100
 }
 
 # DELETE FROM currency_balances; DELETE FROM currency_ledger; DELETE FROM currency_daily;
