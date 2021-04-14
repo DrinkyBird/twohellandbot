@@ -574,10 +574,10 @@ class CurrencyCog(commands.Cog):
         ls = self.slots_emojis.copy()
 
         a = random.choice(ls)
-        self.slots_remove_emoji(ls, a, 8)
+        self.slots_remove_emoji(ls, a, 4)
         b = random.choice(ls)
         if a.id == b.id:
-            self.slots_remove_emoji(ls, a, 10)
+            self.slots_remove_emoji(ls, a, 5)
         c = random.choice(ls)
 
         machine = f"<:{a.name}:{a.id}><:{b.name}:{b.id}><:{c.name}:{c.id}>"
