@@ -33,7 +33,7 @@ class AnnouncementsCog(commands.Cog):
 
         try:
             channel = self.bot.get_channel(739560079182921779)
-            await channel.send("**ATTENTION NEW USERS:** if <@736748316578283531> or <@532660906539352085> ask you any questions then **SAY NO SAY NO SAY NO SAY NO SAY NO SAY NO SAY NO SAY NO SAY NO SAY NO SAY NO SAY NO SAY NO SAY NO SAY NO**",
+            await channel.send(f"Hey {member.mention} do you like bees? :bee:",
                                allowed_mentions=discord.AllowedMentions.none())
         except:
             pass
