@@ -162,13 +162,17 @@ class EliteDangerousCog(commands.Cog):
         return web.Response(text='Logged in. You can close this tab now.')
 
     async def start_webserver(self):
-        self.httpd_started = True
-        app = web.Application()
-        app.router.add_get('/fd', self.handler)
-        runner = web.AppRunner(app)
-        await runner.setup()
-        self.site = web.TCPSite(runner, '', config.ED_FDEV_REDIRECT_PORT)
-        await self.site.start()
+        if not self.httpd_started:
+            self.httpd_started = True
+
+            app = web.Application()
+            app.router.add_get('/fd', self.handler)
+
+            runner = web.AppRunner(app)
+            await runner.setup()
+            
+            self.site = web.TCPSite(runner, '', config.ED_FDEV_REDIRECT_PORT)
+            await self.site.start()
 
     def get_fdev_auth_token(self, user_id):
         cur = db.get_cursor()
