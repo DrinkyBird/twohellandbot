@@ -170,7 +170,7 @@ class EliteDangerousCog(commands.Cog):
 
             runner = web.AppRunner(app)
             await runner.setup()
-            
+
             self.site = web.TCPSite(runner, '', config.ED_FDEV_REDIRECT_PORT)
             await self.site.start()
 
@@ -182,7 +182,7 @@ class EliteDangerousCog(commands.Cog):
             raise Exception(f'You have not linked a Frontier account, use {config.COMMAND_PREFIX}edlink to do so')
 
         now = math.floor(time.time())
-        if True or now + 10 > row['expiry']:
+        if now + 10 > row['expiry']:
             formdata = {
                 'grant_type':           'refresh_token',
                 'client_id':            config.ED_FDEV_CLIENT_ID,
