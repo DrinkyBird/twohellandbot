@@ -15,6 +15,7 @@ import eightball
 import gbooks
 import voteban
 import currency
+import elitedangerous
 
 intents = discord.Intents.default()
 intents.members = True
@@ -35,6 +36,7 @@ client.add_cog(eightball.EightBallCog())
 client.add_cog(gbooks.GoogleBooksCog(client))
 client.add_cog(voteban.VoteBanCog(client))
 client.add_cog(currency.CurrencyCog(client))
+client.add_cog(elitedangerous.EliteDangerousCog(client))
 
 @client.event
 async def on_command(ctx):

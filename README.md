@@ -5,7 +5,7 @@ Python rewrite of TOHELLANDBOT
 ## Dependencies
 
 ```
-python3 -m pip install -U discord.py pydenticon psutil colorthief
+python3 -m pip install -U discord.py pydenticon psutil colorthief aiohttp
 ```
 
 ## Example config
@@ -51,6 +51,12 @@ OBKOV_PATH = "C:/Users/DrinkyBird/Dev/twohellandbot/markov.json"
 
 # Logging channel
 LOG_CHANNEL = 563404643657318410
+
+# from user.frontierstore.net
+ED_FDEV_CLIENT_ID = ""
+ED_FDEV_SHARED_KEY = ""
+ED_FDEV_REDIRECT_HOST = "localhost"
+ED_FDEV_REDIRECT_PORT = 51338
 ```
 
 ## Database schema
