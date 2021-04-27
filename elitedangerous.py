@@ -378,7 +378,6 @@ class EliteDangerousCog(commands.Cog):
             return
 
         cgs = json['activeCommunityGoals']
-        print(json)
 
         if 'activeCommunityGoals' not in json or len(cgs) < 1:
             await ctx.reply("No active Community Goals at the moment.")
