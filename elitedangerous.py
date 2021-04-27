@@ -386,8 +386,8 @@ class EliteDangerousCog(commands.Cog):
 
         for cg in cgs:
             bulletin = cg['bulletin']
-            if len(bulletin) > 900:
-                bulletin = bulletin[:900] + "..."
+            if len(bulletin) > 1000:
+                bulletin = bulletin[:1000] + "..."
 
             percentage = cg['qty'] / cg['target_qty'] * 100
 
@@ -402,5 +402,7 @@ class EliteDangerousCog(commands.Cog):
             if 'commander_progress' in cg:
                 progress = cg['commander_progress']
                 embed.add_field(name="Your Contribution", value=f"{progress['contributionQty']:,} (top {progress['percentile']}%)")
+            else:
+                embed.add_field(name="Your Contribution", value=f"You have not made any contribution to this Community Goal.")
 
             await ctx.send(embed=embed)
