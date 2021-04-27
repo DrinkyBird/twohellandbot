@@ -216,7 +216,7 @@ class EliteDangerousCog(commands.Cog):
     def cog_unload(self):
         asyncio.ensure_future(self.site.stop())
 
-    @commands.command()
+    @commands.command(help="Link your Frontier account")
     async def edlink(self, ctx):
         await self.start_webserver()
 
@@ -243,7 +243,7 @@ class EliteDangerousCog(commands.Cog):
         except:
             await ctx.reply('Failed to send you a direct message. Ensure that you allow DMs from members of this server.')
 
-    @commands.command()
+    @commands.command(help="Unlink your Frontier account")
     async def edunlink(self, ctx):
         cur = db.get_cursor()
 
@@ -264,7 +264,7 @@ class EliteDangerousCog(commands.Cog):
         else:
             return json['rank'][field]
 
-    @commands.command()
+    @commands.command(help="Shows information about your Elite Dangerous commander")
     async def edprofile(self, ctx, endpoint='main'):
         if endpoint not in COMPANION_ENDPOINTS:
             await ctx.reply('Invalid endpoint `' + endpoint + '`')
@@ -347,3 +347,60 @@ class EliteDangerousCog(commands.Cog):
 
 
         await ctx.reply(embed=embed)
+
+    @commands.command(help="Returns active Elite Dangerous community goals")
+    async def edcgs(self, ctx, endpoint='main'):
+
+        if endpoint not in COMPANION_ENDPOINTS:
+            await ctx.reply('Invalid endpoint `' + endpoint + '`')
+            return
+
+        try:
+            token = self.get_fdev_auth_token(ctx.author.id)
+        except Exception as e:
+            await ctx.reply('Failed to get auth token: ' + str(e))
+            return
+
+        if token is None:
+            await ctx.reply('Failed to get auth token')
+            return
+
+        headers = {
+            'User-Agent':       USER_AGENT,
+            'Authorization':    token
+        }
+
+        r = requests.get('https://' + COMPANION_ENDPOINTS[endpoint] + 'companion.orerve.net/communitygoals', headers=headers)
+        try:
+            json = r.json()
+        except:
+            await ctx.reply('Failed to decode API response. The server returned: `' + r.text + '`')
+            return
+
+        cgs = json['activeCommunityGoals']
+        print(json)
+
+        if 'activeCommunityGoals' not in json or len(cgs) < 1:
+            await ctx.reply("No active Community Goals at the moment.")
+            return
+
+        for cg in cgs:
+            bulletin = cg['bulletin']
+            if len(bulletin) > 900:
+                bulletin = bulletin[:900] + "..."
+
+            percentage = cg['qty'] / cg['target_qty'] * 100
+
+            embed = discord.Embed(title=cg['title'])
+            embed.add_field(name="Location", value=f"{cg['market_name']}, {cg['starsystem_name']}", inline=True)
+            embed.add_field(name="Ends", value=cg['expiry'], inline=True)
+            embed.add_field(name="Objective", value=cg['objective'], inline=False)
+            embed.add_field(name="Bulletin", value=bulletin, inline=False)
+            embed.add_field(name="Progress", value=f"{cg['qty']:,}", inline=True)
+            embed.add_field(name="Target", value=f"{cg['target_qty']:,} ({percentage:.0f}%)", inline=True)
+
+            if 'commander_progress' in cg:
+                progress = cg['commander_progress']
+                embed.add_field(name="Your Contribution", value=f"{progress['contributionQty']:,} (top {progress['percentile']}%)")
+
+            await ctx.send(embed=embed)
