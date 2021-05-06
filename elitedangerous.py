@@ -302,7 +302,7 @@ class EliteDangerousCog(commands.Cog):
             state = 'Dead'
         elif commander['docked']:
             state = 'Docked'
-        elif commander['onfoot']:
+        elif 'onfoot' in commander and commander['onfoot']:
             state = 'On Foot'
 
         location = 'Unknown'
