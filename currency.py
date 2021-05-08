@@ -653,9 +653,9 @@ class CurrencyCog(commands.Cog):
 
         user_values = {}
 
-        db.execute("SELECT * FROM currency_lottery WHERE lottery_id=?", (self.lottery_id,))
+        cur.execute("SELECT * FROM currency_lottery WHERE lottery_id=?", (self.lottery_id,))
         for row in cur:
-            uid = row['user']
+            uid = int(row['user'])
             price = row['price']
 
             if uid in user_values:
