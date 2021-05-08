@@ -23,7 +23,6 @@ intents.reactions = True
 
 client = commands.Bot(command_prefix=config.COMMAND_PREFIX, intents=intents)
 client.add_cog(quotes.QuotesCog(client))
-#client.add_cog(systems.SystemsCog())
 client.add_cog(identicon.IdenticonCog())
 client.add_cog(announce.AnnouncementsCog(client))
 client.add_cog(admin.AdminCog(client))
