@@ -12,6 +12,7 @@ import requests
 import io
 import asyncio
 import stats
+import secrets
 from PIL import Image
 
 EMOJI_VALUES = {
@@ -31,6 +32,9 @@ class CurrencyCog(commands.Cog):
         self.lawsuit = None
         self.loss_cooldown = {}
         self.slots_emojis = []
+        self.lottery_active = False
+        self.lottery_end = 0
+        self.lottery_id = None
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -594,6 +598,119 @@ class CurrencyCog(commands.Cog):
         else:
             await ctx.reply(f"{ctx.author.mention} put {amount:,} VeggieBucks in the slot machine..!\n{machine}\nand **lost** it all!")
 
+    @commands.command(help="Shows information about the Montclair Lottery")
+    async def lottery(self, ctx):
+        s = ''
+        if self.lottery_active:
+            end_seconds = self.lottery_end - int(time.time())
+            s += "**A lottery is currently active!** "
+            s += f"It will end in {end_seconds:,} seconds.\n"
+        s += f"You can use `{config.COMMAND_PREFIX}ticket` to buy a single ticket or `{config.COMMAND_PREFIX}ticket <amount>` to buy a certain number of tickets.\n"
+        s += f"Each ticket costs {config.CURRENCY_LOTTERY_TICKET_PRICE:,} VeggieBucks.\n"
+        s += f"The cost of each ticket is added to the prize pool. When the lottery ends, a ticket is chosen at random and whoever that ticket belongs to will win the entire prize pool!"
+
+        await ctx.reply(s)
+
+    @commands.command(help="Purchase tickets for the Montclair Lottery", syntax="[amount=1]")
+    async def ticket(self, ctx, amount=1):
+        try:
+            amount = int(amount)
+        except:
+            await ctx.reply("Amount must be a number")
+            return
+
+        if amount < 1:
+            await ctx.reply("You must buy at least one ticket")
+            return
+
+        price = amount * config.CURRENCY_LOTTERY_TICKET_PRICE
+
+        if not self.user_can_afford(ctx.author.id, price):
+            await ctx.reply(f"You can't afford {amount:,} tickets (costs {price:,} VeggieBucks)")
+            return
+
+        cchannel = self.bot.get_channel(config.CURRENCY_CHANNEL)
+        if not self.lottery_active:
+            self.lottery_active = True
+            self.lottery_id = secrets.token_hex(8)
+            self.lottery_end = int(time.time() + (config.CURRENCY_LOTTERY_DURATION * 60))
+            await cchannel.send(f"The lottery has begun! Tickets will be drawn in {config.CURRENCY_LOTTERY_DURATION} minutes.")
+            self.bot.loop.create_task(self.lottery_callback())
+
+        await self.transfer_money(ctx.author.id, self.bot.user.id, price, f"Bought {amount:,} lottery tickets ({self.lottery_id})", True)
+
+        cur = db.get_cursor()
+        for i in range(amount):
+            cur.execute("INSERT INTO currency_lottery (lottery_id, user, price) VALUES (?, ?, ?)",
+                        (self.lottery_id, ctx.author.id, config.CURRENCY_LOTTERY_TICKET_PRICE))
+
+        db.commit()
+
+        await ctx.reply(f"You purchased {amount:,} lottery tickets for {price:,} VeggieBucks.")
+
+    async def cancel_lottery(self, lottery_id):
+        cur = db.get_cursor()
+
+        user_values = {}
+
+        db.execute("SELECT * FROM currency_lottery WHERE lottery_id=?", (self.lottery_id,))
+        for row in cur:
+            uid = row['user']
+            price = row['price']
+
+            if uid in user_values:
+                user_values[uid] += price
+            else:
+                user_values[uid] = price
+
+        for user in user_values:
+            value = user_values[user]
+            await self.transfer_money(self.bot.user.id, user, value, f"Ticket refund from cancelled lottery ({lottery_id})")
+            cur.execute("DELETE FROM currency_lottery WHERE lottery_id=? AND user=?", (lottery_id, user))
+
+        db.commit()
+
+    async def lottery_callback(self):
+        await asyncio.sleep(config.CURRENCY_LOTTERY_DURATION * 60)
+
+        cchannel = self.bot.get_channel(config.CURRENCY_CHANNEL)
+        cur = db.get_cursor()
+
+        lottery_id = self.lottery_id
+        self.lottery_active = False
+
+        user_values = {}
+        ticket_uids = []
+        total_value = 0
+
+        cur.execute("SELECT * FROM currency_lottery WHERE lottery_id=?", (lottery_id,))
+        for row in cur:
+            uid = row['user']
+            price = row['price']
+
+            total_value += price
+            ticket_uids.append(uid)
+
+            if uid in user_values:
+                user_values[uid] += price
+            else:
+                user_values[uid] = price
+
+        if len(user_values) < 2:
+            await cchannel.send("Not enough people entered the lottery, tickets have been refunded.")
+            await self.cancel_lottery(lottery_id)
+            return
+
+        while len(ticket_uids) > 1:
+            ticket_uids.pop(random.randrange(len(ticket_uids)))
+
+        winner = ticket_uids[0]
+
+        await self.transfer_money(self.bot.user.id, winner, total_value, f"Won lottery ({lottery_id})")
+        await cchannel.send(f"And the winner of the Montclair Lottery is <@{winner}>, who gets {total_value:,} VeggieBucks!")
+
+        cur.execute("DELETE FROM currency_lottery WHERE lottery_id=?", (lottery_id,))
+        db.commit()
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):

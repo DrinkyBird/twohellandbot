@@ -124,4 +124,12 @@ CREATE TABLE IF NOT EXISTS "old_emoji" (
         "id"  TEXT,
         PRIMARY KEY("id")
 );
+
+CREATE TABLE "currency_lottery" (
+	"id"	INTEGER,
+	"lottery_id"	TEXT,
+	"user"	TEXT,
+	"price"	INTEGER,
+	PRIMARY KEY("id" AUTOINCREMENT)
+)
 ```
