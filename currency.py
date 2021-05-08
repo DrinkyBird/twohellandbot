@@ -35,6 +35,7 @@ class CurrencyCog(commands.Cog):
         self.lottery_active = False
         self.lottery_end = 0
         self.lottery_id = None
+        self.lottery_pool = 0
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -604,7 +605,8 @@ class CurrencyCog(commands.Cog):
         if self.lottery_active:
             end_seconds = self.lottery_end - int(time.time())
             s += "**A lottery is currently active!** "
-            s += f"It will end in {end_seconds:,} seconds.\n"
+            s += f"It will end in {end_seconds:,} seconds. "
+            s += f"The current pool is {self.lottery_pool:,} VeggieBucks.\n"
         s += f"You can use `{config.COMMAND_PREFIX}ticket` to buy a single ticket or `{config.COMMAND_PREFIX}ticket <amount>` to buy a certain number of tickets.\n"
         s += f"Each ticket costs {config.CURRENCY_LOTTERY_TICKET_PRICE:,} VeggieBucks.\n"
         s += f"The cost of each ticket is added to the prize pool. When the lottery ends, a ticket is chosen at random and whoever that ticket belongs to will win the entire prize pool!"
@@ -634,10 +636,12 @@ class CurrencyCog(commands.Cog):
             self.lottery_active = True
             self.lottery_id = secrets.token_hex(8)
             self.lottery_end = int(time.time() + (config.CURRENCY_LOTTERY_DURATION * 60))
+            self.lottery_pool = 0
             await cchannel.send(f"The lottery has begun! Tickets will be drawn in {config.CURRENCY_LOTTERY_DURATION} minutes.")
             self.bot.loop.create_task(self.lottery_callback())
 
         await self.transfer_money(ctx.author.id, self.bot.user.id, price, f"Bought {amount:,} lottery tickets ({self.lottery_id})", True)
+        self.lottery_pool += price
 
         cur = db.get_cursor()
         for i in range(amount):
