@@ -704,7 +704,7 @@ class CurrencyCog(commands.Cog):
         while len(ticket_uids) > 1:
             ticket_uids.pop(random.randrange(len(ticket_uids)))
 
-        winner = ticket_uids[0]
+        winner = int(ticket_uids[0])
 
         await self.transfer_money(self.bot.user.id, winner, total_value, f"Won lottery ({lottery_id})")
         await cchannel.send(f"And the winner of the Montclair Lottery is <@{winner}>, who gets {total_value:,} VeggieBucks!")
