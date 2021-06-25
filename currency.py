@@ -630,6 +630,10 @@ class CurrencyCog(commands.Cog):
         if not self.user_can_afford(ctx.author.id, price):
             await ctx.reply(f"You can't afford {amount:,} tickets (costs {price:,} VeggieBucks)")
             return
+        
+        if self.lawsuit is not None and ctx.author.id in self.lawsuit:
+            await ctx.reply("You're currently involved in a lawsuit!")
+            return
 
         cchannel = self.bot.get_channel(config.CURRENCY_CHANNEL)
         if not self.lottery_active:
