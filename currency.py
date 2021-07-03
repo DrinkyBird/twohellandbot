@@ -535,10 +535,11 @@ class CurrencyCog(commands.Cog):
             self.loss_cooldown[plaintiff.id] = time.time()
 
     def slots_remove_emoji(self, ls, wanted, chance):
-        if random.randrange(0, chance) == 0:
+        if chance == 0 or random.randrange(0, chance) == 0:
             i = wanted
             while i == wanted:
                 i = random.choice(ls)
+            print("removed " + str(i))
             ls.remove(i)
 
     @commands.command()
@@ -579,10 +580,13 @@ class CurrencyCog(commands.Cog):
         ls = self.slots_emojis.copy()
 
         a = random.choice(ls)
-        self.slots_remove_emoji(ls, a, 1)
+        print("ls1 " + str(ls))
+        self.slots_remove_emoji(ls, a, 0)
+        print("ls2 " + str(ls))
         b = random.choice(ls)
         if a.id == b.id:
-            self.slots_remove_emoji(ls, a, 1)
+            self.slots_remove_emoji(ls, a, 0)
+        print("ls3 " + str(ls))
         c = random.choice(ls)
 
         machine = f"<:{a.name}:{a.id}><:{b.name}:{b.id}><:{c.name}:{c.id}>"
