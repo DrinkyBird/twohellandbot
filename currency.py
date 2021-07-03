@@ -582,13 +582,13 @@ class CurrencyCog(commands.Cog):
         a = random.choice(ls)
         print("ls1 " + str(ls))
         self.slots_remove_emoji(ls, a, 0)
-        for i in range(random.randint(0, 2)):
+        for i in range(random.randint(0, 5)):
             ls.append(a)
         print("ls2 " + str(ls))
         b = random.choice(ls)
         if a.id == b.id:
             self.slots_remove_emoji(ls, a, 0)
-            for i in range(random.randint(0, 2)):
+            for i in range(random.randint(0, 5)):
                 ls.append(a)
         print("ls3 " + str(ls))
         c = random.choice(ls)
@@ -603,7 +603,8 @@ class CurrencyCog(commands.Cog):
             reward = math.floor(amount * multiplier)
             await self.transfer_money(self.bot.user.id, ctx.author.id, reward, "Won slots!", True)
 
-            await ctx.reply(f"{ctx.author.mention} put {amount:,} VeggieBucks in the slot machine..!\n{machine}\nand **won** {reward:,} in return!")
+            net_win = reward - amount
+            await ctx.reply(f"{ctx.author.mention} put {amount:,} VeggieBucks in the slot machine..!\n{machine}\nand **won** {reward:,} in return! (Net win of {net_win:,})")
         else:
             await ctx.reply(f"{ctx.author.mention} put {amount:,} VeggieBucks in the slot machine..!\n{machine}\nand **lost** it all!")
 
