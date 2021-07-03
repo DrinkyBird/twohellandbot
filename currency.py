@@ -579,10 +579,10 @@ class CurrencyCog(commands.Cog):
         ls = self.slots_emojis.copy()
 
         a = random.choice(ls)
-        self.slots_remove_emoji(ls, a, random.choice([2, 2, 1]))
+        self.slots_remove_emoji(ls, a, random.choice([2, 1]))
         b = random.choice(ls)
         if a.id == b.id:
-            self.slots_remove_emoji(ls, a, random.choice([4, 4, 4, 3, 3, 2]))
+            self.slots_remove_emoji(ls, a, 3)
         c = random.choice(ls)
 
         machine = f"<:{a.name}:{a.id}><:{b.name}:{b.id}><:{c.name}:{c.id}>"
@@ -630,7 +630,7 @@ class CurrencyCog(commands.Cog):
         if not self.user_can_afford(ctx.author.id, price):
             await ctx.reply(f"You can't afford {amount:,} tickets (costs {price:,} VeggieBucks)")
             return
-        
+
         if self.lawsuit is not None and ctx.author.id in self.lawsuit:
             await ctx.reply("You're currently involved in a lawsuit!")
             return
