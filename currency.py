@@ -582,7 +582,7 @@ class CurrencyCog(commands.Cog):
         self.slots_remove_emoji(ls, a, 1)
         b = random.choice(ls)
         if a.id == b.id:
-            self.slots_remove_emoji(ls, a, random.choice([3, 3, 2]))
+            self.slots_remove_emoji(ls, a, random.choice([3, 2, 2]))
         c = random.choice(ls)
 
         machine = f"<:{a.name}:{a.id}><:{b.name}:{b.id}><:{c.name}:{c.id}>"
