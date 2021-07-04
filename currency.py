@@ -581,13 +581,13 @@ class CurrencyCog(commands.Cog):
 
         a = random.choice(ls)
         print("ls1 " + str(ls))
-        self.slots_remove_emoji(ls, a, 0)
+        self.slots_remove_emoji(ls, a, 1)
         for i in range(random.randint(0, 1)):
             ls.append(a)
         print("ls2 " + str(ls))
         b = random.choice(ls)
         if a.id == b.id:
-            self.slots_remove_emoji(ls, a, 0)
+            self.slots_remove_emoji(ls, a, 2)
             for i in range(random.randint(0, 0)):
                 ls.append(a)
         print("ls3 " + str(ls))
